@@ -1419,6 +1419,7 @@
     body.companion-mode .header-divider,
     body.companion-mode .project-name-btn,
     body.companion-mode .mode-toggle,
+    body.companion-mode .view-toggle,
     body.companion-mode .btn-companion-hide,
     body.companion-mode #btn-primary-action,
     body.companion-mode .block-actions-row {
@@ -1539,6 +1540,10 @@
         <button class="project-name-btn" id="project-rename-trigger" title="Click to rename project">
           <span id="header-project-name">Untitled project</span> ✎
         </button>
+        <div class="view-toggle" role="group" aria-label="View Switcher" style="display:inline-flex;background:var(--surface-secondary);border:1px solid var(--line);border-radius:var(--radius-sm);padding:2px;gap:2px;">
+          <button class="view-btn active" id="btn-view-start" style="border:none;background:var(--surface);color:var(--green);font-weight:700;padding:5px 12px;font-size:12px;border-radius:4px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);">🏠 Start</button>
+          <button class="view-btn" id="btn-view-dashboard" style="border:none;background:transparent;color:var(--ink-secondary);font-weight:700;padding:5px 12px;font-size:12px;border-radius:4px;cursor:pointer;">📊 Dashboard</button>
+        </div>
         <div class="mode-toggle" role="group" aria-label="Workflow Mode">
           <button class="mode-btn active" id="btn-mode-prepare"
             title="Import storyboard, inspect, review and export handoff">
@@ -1651,11 +1656,17 @@
         image attachments automatically.</p>
 
       <div class="dropzone-action-area">
-        <button class="btn-primary btn-hero-lg" id="start-btn-word">
-          <span style="font-size:18px;">📄</span>
-          <span>Import Word storyboard (.docx)</span>
-        </button>
-        <span class="dropzone-hint">or drag & drop your .docx storyboard file here</span>
+        <div style="display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="btn-primary btn-hero-lg" id="start-btn-word" style="font-size:16px;padding:14px 28px;">
+            <span style="font-size:20px;">📄</span>
+            <span>Import Word Storyboard</span>
+          </button>
+          <button class="btn-secondary btn-hero-lg" id="start-btn-dashboard" style="font-size:16px;padding:14px 28px;background:#ffffff;border:2px solid var(--green);color:var(--green);font-weight:700;cursor:pointer;">
+            <span style="font-size:20px;">📊</span>
+            <span id="start-dashboard-text">Course Dashboard</span>
+          </button>
+        </div>
+        <span class="dropzone-hint">or drag & drop your .docx storyboard anywhere on this page</span>
       </div>
 
       <div class="start-features-row">
@@ -1881,7 +1892,7 @@
 
   <script>
     /* Content Shelf Application Logic */
-    (function() {
+    (function () {
       'use strict';
 
       const STORAGE_KEY = 'aptara-content-shelf-v1';
@@ -1978,6 +1989,7 @@
       let project = null;
       let selectedId = null;
       let workflowMode = 'prepare'; // 'prepare' or 'build'
+      let currentView = (location.hash === '#workspace' && !new URLSearchParams(location.search).has('compact')) ? 'workspace' : (new URLSearchParams(location.search).has('compact') ? 'workspace' : 'start');
       let undoStack = null;
       let isCompanion = new URLSearchParams(location.search).has('compact');
       let isUnsaved = false;
@@ -2114,7 +2126,7 @@
         workflowMode = mode;
         try {
           localStorage.setItem(ROLE_KEY, mode === 'prepare' ? 'id' : 'dev');
-        } catch {}
+        } catch { }
         updateModeUI();
         renderWorkspace();
       }
@@ -2123,7 +2135,7 @@
         const isPrep = workflowMode === 'prepare';
         $('#btn-mode-prepare').classList.toggle('active', isPrep);
         $('#btn-mode-build').classList.toggle('active', !isPrep);
-        
+
         // Context primary action button and import step button
         const headerImportBtn = $('#btn-header-import-sb');
         if (isPrep) {
@@ -2146,22 +2158,50 @@
       // Main Render
       function render() {
         const hasBlocks = project && Array.isArray(project.blocks) && project.blocks.length > 0;
+        const isSample = Boolean(project?.isSample || project?.name === 'Internal Controls - Lesson 01');
 
         if (!hasBlocks) {
-          // Show Start Experience when there is no project or when project has 0 blocks
+          currentView = 'start';
+        }
+
+        // Update header view nav tabs
+        const btnViewStart = $('#btn-view-start');
+        const btnViewDash = $('#btn-view-dashboard');
+        if (btnViewStart) {
+          btnViewStart.style.background = currentView === 'start' ? 'var(--surface)' : 'transparent';
+          btnViewStart.style.color = currentView === 'start' ? 'var(--green)' : 'var(--ink-secondary)';
+          btnViewStart.style.boxShadow = currentView === 'start' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
+        }
+        if (btnViewDash) {
+          btnViewDash.style.background = currentView === 'workspace' ? 'var(--surface)' : 'transparent';
+          btnViewDash.style.color = currentView === 'workspace' ? 'var(--green)' : 'var(--ink-secondary)';
+          btnViewDash.style.boxShadow = currentView === 'workspace' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
+          btnViewDash.disabled = !hasBlocks;
+        }
+
+        // Update Start Screen dashboard button text
+        const startDashText = $('#start-dashboard-text');
+        if (startDashText) {
+          startDashText.textContent = hasBlocks ? `Course Dashboard (${project.blocks.length} blocks)` : 'Course Dashboard';
+        }
+
+        if (currentView === 'start') {
           $('#start-screen-container').hidden = false;
           $('#workspace-container').hidden = true;
           $('#demo-banner').hidden = true;
-          $('#header-project-name').textContent = project?.name && project.name !== 'Untitled project' ? project.name : 'No active project';
-          $('#badge-prepare-count').textContent = '0/0';
-          $('#badge-build-count').textContent = '0/0';
+          $('#header-project-name').textContent = project?.name || 'Aptara Content Shelf';
+          const total = hasBlocks ? project.blocks.length : 0;
+          const reviewedCount = hasBlocks ? project.blocks.filter(b => b.reviewed).length : 0;
+          const insertedCount = hasBlocks ? project.blocks.filter(b => b.done).length : 0;
+          $('#badge-prepare-count').textContent = `${reviewedCount}/${total}`;
+          $('#badge-build-count').textContent = `${insertedCount}/${total}`;
           return;
         }
 
         // Show Workspace
         $('#start-screen-container').hidden = true;
         $('#workspace-container').hidden = false;
-        $('#demo-banner').hidden = !project.isSample;
+        $('#demo-banner').hidden = !isSample;
 
         // Ensure selected block is valid
         if (!project.blocks.some(b => b.id === selectedId)) {
@@ -2207,7 +2247,7 @@
         });
 
         // Compact select options
-        compactSelect.innerHTML = project.blocks.map((b, idx) => {
+        compactSelect.innerHTML = project.blocks.map(b => {
           const statusMark = (workflowMode === 'prepare' ? b.reviewed : b.done) ? '✓ ' : '';
           const label = `${statusMark}${b.sourceId ? b.sourceId + ' · ' : ''}${b.title}`;
           return `<option value="${esc(b.id)}" ${b.id === selectedId ? 'selected' : ''}>${esc(label)}</option>`;
@@ -2222,9 +2262,9 @@
         container.innerHTML = filtered.map(({ b, idx }) => {
           const isSelected = b.id === selectedId;
           const isComplete = isPrep ? b.reviewed : b.done;
-          const hasFlags = (b.missingFields && b.missingFields.length > 0) || 
-                           (b.importWarnings && b.importWarnings.length > 0) ||
-                           b.parts.some(p => !p.text.trim());
+          const hasFlags = (b.missingFields && b.missingFields.length > 0) ||
+            (b.importWarnings && b.importWarnings.length > 0) ||
+            b.parts.some(p => !p.text.trim());
 
           return `
             <button class="nav-block-btn ${isSelected ? 'active' : ''}" data-block-id="${esc(b.id)}" ${isSelected ? 'aria-current="true"' : ''}>
@@ -2415,7 +2455,7 @@
           if (qParts.length) groups.push({ title: 'Question', parts: qParts });
           if (optParts.length) groups.push({ title: 'Options', parts: optParts });
           if (fbParts.length) groups.push({ title: 'Feedback', parts: fbParts });
-          if (other.length) groups.push({ title: 'Additional Content', parts: other });
+          if (other.length) groups.push({ title: 'Additional Details', parts: other });
           return groups.length ? groups : [{ title: '', parts }];
         }
 
@@ -2446,8 +2486,8 @@
         return `
           <div class="section-title">Associated Assets</div>
           ${assets.map((a, i) => {
-            const isAttached = !!a.data;
-            return `
+          const isAttached = !!a.data;
+          return `
               <div class="asset-card">
                 <div class="asset-thumb-box">
                   ${isAttached ? `<img src="${a.data}" class="asset-thumb-img" alt="${esc(a.alt || 'Asset thumbnail')}">` : `<div class="asset-placeholder-icon">▤</div>`}
@@ -2456,6 +2496,7 @@
                   <div class="asset-filename">${esc(a.name || 'Unnamed asset')}</div>
                   <span class="asset-status-pill ${isAttached ? 'attached' : 'reference'}">
                     ${isAttached ? '✓ Image attached in handoff' : '⚠ Filename reference only (no image attached)'}
+                  </span>
                   ${a.alt ? `<div class="asset-alt-text"><b>Alt text:</b> ${esc(a.alt)}</div>` : ''}
                   <div class="asset-actions">
                     ${a.name ? `<button class="btn-sm copy-btn" data-copy-text="${esc(a.name)}">⧉ Copy filename</button>` : ''}
@@ -2465,7 +2506,7 @@
                 </div>
               </div>
             `;
-          }).join('')}
+        }).join('')}
         `;
       }
 
@@ -2587,6 +2628,29 @@
       // Mode toggling
       $('#btn-mode-prepare').onclick = () => setWorkflowMode('prepare');
       $('#btn-mode-build').onclick = () => setWorkflowMode('build');
+
+      // View switching (Start Screen vs Course Dashboard)
+      $('#btn-view-start').onclick = () => {
+        currentView = 'start';
+        render();
+      };
+      $('#btn-view-dashboard').onclick = () => {
+        if (!project || !project.blocks.length) {
+          loadSampleLesson();
+        }
+        currentView = 'workspace';
+        render();
+      };
+      const startDashBtn = $('#start-btn-dashboard');
+      if (startDashBtn) {
+        startDashBtn.onclick = () => {
+          if (!project || !project.blocks.length) {
+            loadSampleLesson();
+          }
+          currentView = 'workspace';
+          render();
+        };
+      }
 
       // Search
       $('#search-input').oninput = e => {
@@ -2739,6 +2803,7 @@
           blocks: []
         };
         selectedId = null;
+        currentView = 'start';
         saveToStorage();
         render();
         showToast('New empty project created');
@@ -2752,6 +2817,7 @@
         rememberUndo();
         project = createSampleProject();
         selectedId = project.blocks[0].id;
+        currentView = 'workspace';
         saveToStorage();
         render();
         showToast('Sample demo lesson loaded');
@@ -2813,6 +2879,7 @@
           rememberUndo();
           project = p;
           selectedId = p.blocks[0]?.id || null;
+          currentView = 'workspace';
           setWorkflowMode('build'); // Opening handoff automatically defaults to developer build mode!
           saveToStorage();
           render();
@@ -3023,6 +3090,7 @@
         rememberUndo();
         project = candidate;
         selectedId = selectedBlocks[0]?.id || null;
+        currentView = 'workspace';
         setWorkflowMode('prepare'); // Importing Word sets mode to Prepare content!
         saveToStorage();
         render();
@@ -3191,7 +3259,7 @@
           return;
         }
 
-        const existing = project.blocks.find(x => x.id ===  editingBlockId);
+        const existing = project.blocks.find(x => x.id === editingBlockId);
         const updatedBlock = {
           ...existing,
           id: editingBlockId || uuid(),
@@ -3209,7 +3277,7 @@
         const testProject = {
           version: 1,
           name: project.name,
-          blocks:  [updatedBlock]
+          blocks: [updatedBlock]
         };
 
         if (!validateProject(testProject)) {
@@ -3218,7 +3286,7 @@
         }
 
         rememberUndo();
-        if (editingBlockId  && existing) {
+        if (editingBlockId && existing) {
           const idx = project.blocks.indexOf(existing);
           project.blocks[idx] = updatedBlock;
         } else {
@@ -3229,7 +3297,7 @@
         saveToStorage();
         render();
         $('#editor-dialog').close();
-        showToast('Block saved');
+        oast('Block saved');
       };
 
       // Multi-window synchronization & Stale editor conflict protection
@@ -3257,7 +3325,7 @@
               render();
               showToast('Project updated from another window');
             }
-          } catch {}
+          } catch { }
         }
       });
 
@@ -3278,7 +3346,7 @@
           try {
             const savedRole = localStorage.getItem(ROLE_KEY);
             if (savedRole === 'dev') workflowMode = 'build';
-          } catch {}
+          } catch { }
         }
 
         // Try load existing project from localStorage
