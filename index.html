@@ -237,7 +237,9 @@
       border: 1px solid transparent;
       padding: 5px 8px;
       border-radius: var(--radius-sm);
-      max-width: 260px;
+      min-width: 60px;
+      max-width: 240px;
+      flex-shrink: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -247,6 +249,57 @@
     .project-name-btn:hover {
       background: var(--surface-subtle);
       border-color: var(--line);
+    }
+
+    #header-project-name {
+      display: inline-block;
+      max-width: calc(100% - 16px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    /* View Switcher */
+    .view-toggle {
+      display: inline-flex;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 2px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .view-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .view-btn:hover:not(:disabled) {
+      color: var(--ink);
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .view-btn.active {
+      background: var(--surface);
+      color: var(--green);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .view-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     /* Workflow Mode Selector */
@@ -486,6 +539,82 @@
       display: none;
     }
 
+    .sidebar-filter-bar {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      padding: 3px 9px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .filter-btn:hover {
+      background: var(--surface-subtle);
+      border-color: var(--line);
+    }
+
+    .filter-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #ffffff;
+    }
+
+    .filter-summary {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-section-group {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-section-summary {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: var(--radius-sm);
+      user-select: none;
+    }
+
+    .sidebar-section-summary:hover {
+      background: rgba(0, 0, 0, 0.03);
+      color: var(--ink);
+    }
+
+    .sidebar-section-count {
+      font-size: 10px;
+      background: #edf1ef;
+      border: 1px solid var(--line-subtle);
+      padding: 1px 6px;
+      border-radius: 10px;
+      color: var(--muted);
+    }
+
+    .sidebar-section-blocks {
+      padding-top: 2px;
+    }
+
     .block-list {
       flex: 1;
       overflow-y: auto;
@@ -596,7 +725,6 @@
       background: #d97706;
       flex-shrink: 0;
       margin-top: 6px;
-      title: 'Has review flags';
     }
 
     .sidebar-footer {
@@ -1051,120 +1179,106 @@
       margin: 0 auto;
     }
 
-    .start-hero-import-card {
+    .start-resume-card {
       background: var(--surface);
-      border: 2px dashed var(--green-border);
+      border: 1.5px solid var(--green-border);
       border-radius: var(--radius-xl);
-      padding: 34px 32px;
-      text-align: center;
-      margin-bottom: 20px;
+      padding: 18px 24px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      background: linear-gradient(to right, var(--green-light), var(--surface));
+    }
+
+    .resume-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .resume-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .resume-meta {
+      font-size: 13px;
+      color: var(--ink-secondary);
+    }
+
+    .start-main-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 680px) {
+      .start-main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .start-choice-card {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
       box-shadow: var(--shadow-sm);
       transition: all 0.2s ease;
+      text-align: left;
     }
 
-    .start-hero-import-card.dragover {
-      border-color: var(--green);
-      background: var(--green-light);
+    .start-choice-card:hover {
+      border-color: var(--green-border);
       box-shadow: var(--shadow-md);
-      transform: scale(1.01);
+      transform: translateY(-2px);
     }
 
-    .start-step-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      color: var(--green);
-      background: var(--green-light);
-      padding: 4px 12px;
-      border-radius: 20px;
+    .choice-icon {
+      font-size: 32px;
       margin-bottom: 12px;
     }
 
-    .start-hero-import-card h2 {
+    .start-choice-card h2 {
       font-family: 'Manrope', sans-serif;
-      font-size: 23px;
+      font-size: 20px;
       font-weight: 800;
       color: var(--ink);
       margin-bottom: 8px;
     }
 
-    .start-hero-import-card p {
+    .start-choice-card p {
       font-size: 14px;
       color: var(--ink-secondary);
-      max-width: 540px;
-      margin: 0 auto 22px;
-      line-height: 1.6;
+      line-height: 1.55;
+      margin-bottom: 20px;
+      flex: 1;
     }
 
-    .dropzone-action-area {
+    .start-secondary-links {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-
-    .btn-hero-lg {
-      padding: 13px 28px;
-      font-size: 15px;
-      font-weight: 700;
-      border-radius: var(--radius-md);
-      box-shadow: 0 4px 14px rgba(36, 113, 92, 0.25);
-    }
-
-    .dropzone-hint {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .start-features-row {
-      display: flex;
       justify-content: center;
-      gap: 22px;
-      font-size: 12px;
+      gap: 12px;
       color: var(--muted);
-      border-top: 1px solid var(--line-subtle);
-      padding-top: 16px;
+      font-size: 13px;
       flex-wrap: wrap;
     }
 
-    .start-secondary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    @media (max-width: 800px) {
-      .start-secondary-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .start-secondary-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .secondary-title {
-      font-family: 'Manrope', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .start-secondary-card p {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin: 0;
-      flex: 1;
+    .dot-sep {
+      color: var(--line);
     }
 
     /* Global Drag and drop overlay */
@@ -1540,9 +1654,9 @@
         <button class="project-name-btn" id="project-rename-trigger" title="Click to rename project">
           <span id="header-project-name">Untitled project</span> ✎
         </button>
-        <div class="view-toggle" role="group" aria-label="View Switcher" style="display:inline-flex;background:var(--surface-secondary);border:1px solid var(--line);border-radius:var(--radius-sm);padding:2px;gap:2px;">
-          <button class="view-btn active" id="btn-view-start" style="border:none;background:var(--surface);color:var(--green);font-weight:700;padding:5px 12px;font-size:12px;border-radius:4px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);">🏠 Start</button>
-          <button class="view-btn" id="btn-view-dashboard" style="border:none;background:transparent;color:var(--ink-secondary);font-weight:700;padding:5px 12px;font-size:12px;border-radius:4px;cursor:pointer;">📊 Dashboard</button>
+        <div class="view-toggle" role="tablist" aria-label="Views">
+          <button class="view-btn active" id="btn-view-start" role="tab" aria-selected="true" title="Start screen">🏠 Start</button>
+          <button class="view-btn" id="btn-view-workspace" role="tab" aria-selected="false" title="Course blocks workspace">▤ Workspace</button>
         </div>
         <div class="mode-toggle" role="group" aria-label="Workflow Mode">
           <button class="mode-btn active" id="btn-mode-prepare"
@@ -1566,12 +1680,27 @@
 
         <button class="btn-sm btn-companion-hide" id="btn-header-import-sb"
           style="font-weight:700;color:var(--green);border-color:var(--green-border);background:var(--green-light);">
-          <span>📄 Import SB</span>
+          <span>📄 Import storyboard</span>
         </button>
 
         <button class="btn-primary" id="btn-primary-action">
           <span id="primary-action-text">Export handoff</span>
         </button>
+
+        <!-- Companion Mode Menu -->
+        <div class="menu-container companion-menu-container" id="companion-menu-box" style="display:none;">
+          <button class="btn-quiet btn-sm" id="btn-companion-menu" aria-expanded="false" aria-haspopup="true">
+            <span>Menu ▾</span>
+          </button>
+          <div class="dropdown-menu" id="companion-dropdown-menu" role="menu">
+            <button class="menu-item" id="menu-comp-full-workspace" role="menuitem">
+              <span>↗ Open full workspace</span>
+            </button>
+            <button class="menu-item" id="menu-comp-save-backup" role="menuitem">
+              <span>💾 Save project backup (.json)</span>
+            </button>
+          </div>
+        </div>
 
         <!-- Secondary Actions Menu -->
         <div class="menu-container">
@@ -1639,71 +1768,54 @@
     <button class="btn-sm" id="btn-start-fresh">Start your own project</button>
   </div>
 
-  <!-- Start Experience (shown when no active project exists) -->
+  <!-- Start Experience (shown when no active project exists or from Home) -->
   <div id="start-screen-container" class="start-screen" hidden>
     <div class="start-hero">
       <div class="start-hero-icon">▤</div>
       <h1>Aptara Content Shelf</h1>
-      <p>A companion for preparing storyboard content and transferring it into Articulate Rise without window switching.
-      </p>
+      <p>A companion for preparing storyboard content and transferring it into Articulate Rise without window switching.</p>
     </div>
 
-    <!-- Step 1: Import Storyboard (Prominent Hero Dropzone) -->
-    <div class="start-hero-import-card" id="dropzone-start">
-      <div class="start-step-badge">STEP 1 · FIRST STEP</div>
-      <h2>Import Word Storyboard</h2>
-      <p>Load your completed Articulate Rise Word storyboard to extract blocks, copyable text, developer notes, and
-        image attachments automatically.</p>
+    <!-- Prominent Resume Project card if active project exists in storage -->
+    <div id="start-resume-card" class="start-resume-card" hidden>
+      <div>
+        <span class="resume-badge">SAVED IN BROWSER</span>
+        <h3 id="start-resume-title" class="resume-title">Untitled project</h3>
+        <p id="start-resume-meta" class="resume-meta">5 blocks · Saved in this browser</p>
+      </div>
+      <button class="btn-primary" id="start-btn-resume" style="font-weight:700;padding:10px 22px;">
+        Resume workspace →
+      </button>
+    </div>
 
-      <div class="dropzone-action-area">
-        <div style="display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-          <button class="btn-primary btn-hero-lg" id="start-btn-word" style="font-size:16px;padding:14px 28px;">
-            <span style="font-size:20px;">📄</span>
-            <span>Import Word Storyboard</span>
-          </button>
-          <button class="btn-secondary btn-hero-lg" id="start-btn-dashboard" style="font-size:16px;padding:14px 28px;background:#ffffff;border:2px solid var(--green);color:var(--green);font-weight:700;cursor:pointer;">
-            <span style="font-size:20px;">📊</span>
-            <span id="start-dashboard-text">Course Dashboard</span>
-          </button>
-        </div>
-        <span class="dropzone-hint">or drag & drop your .docx storyboard anywhere on this page</span>
+    <!-- Main Workflow Choices: Prepare content vs Build in Rise -->
+    <div class="start-main-grid">
+      <div class="start-choice-card">
+        <div class="choice-icon">📄</div>
+        <h2>Prepare content</h2>
+        <p>Import a Word storyboard, review its content, and prepare a developer handoff.</p>
+        <button class="btn-primary" id="start-btn-word" style="width:100%;font-weight:700;padding:12px;">
+          Import Word storyboard
+        </button>
       </div>
 
-      <div class="start-features-row">
-        <span>✓ Extracts text, options & notes</span>
-        <span>✓ Attaches embedded images</span>
-        <span>✓ 100% private in this browser</span>
+      <div class="start-choice-card">
+        <div class="choice-icon">📂</div>
+        <h2>Build in Rise</h2>
+        <p>Open a handoff file and keep its content beside Rise while you build.</p>
+        <button class="btn-primary" id="start-btn-handoff" style="width:100%;font-weight:700;padding:12px;background:var(--surface);border:1.5px solid var(--green);color:var(--green);">
+          Open handoff file
+        </button>
       </div>
     </div>
 
-    <!-- Alternative Options (Developer Handoff, Sample, Empty) -->
-    <div class="start-secondary-grid">
-      <div class="start-secondary-card">
-        <div>
-          <div class="secondary-title">Rise Developer Handoff</div>
-          <p>Already have an exported handoff file (.json) from an instructional designer?</p>
-        </div>
-        <button class="btn-quiet" id="start-btn-handoff" style="border:1px solid var(--line);width:100%;">📂 Open
-          handoff file</button>
-      </div>
-
-      <div class="start-secondary-card">
-        <div>
-          <div class="secondary-title">Explore Sample Project</div>
-          <p>Explore a pre-loaded lesson to see how blocks, copying, and companion mode work.</p>
-        </div>
-        <button class="btn-quiet" id="start-btn-sample" style="border:1px solid var(--line);width:100%;">✦ Try sample
-          lesson</button>
-      </div>
-
-      <div class="start-secondary-card">
-        <div>
-          <div class="secondary-title">Build Manually</div>
-          <p>Create a block from scratch and type or paste content manually.</p>
-        </div>
-        <button class="btn-quiet" id="start-btn-manual" style="border:1px solid var(--line);width:100%;">＋ Add block
-          manually</button>
-      </div>
+    <!-- Smaller secondary actions -->
+    <div class="start-secondary-links">
+      <button class="btn-quiet btn-sm" id="start-btn-sample">✦ Try sample lesson</button>
+      <span class="dot-sep">·</span>
+      <button class="btn-quiet btn-sm" id="start-btn-manual">＋ Add block manually</button>
+      <span class="dot-sep">·</span>
+      <span style="font-size:12px;color:var(--muted);">or drag & drop a .docx or .json anywhere</span>
     </div>
   </div>
 
@@ -1732,6 +1844,16 @@
           <input type="text" class="search-input" id="search-input" placeholder="Search blocks or content…"
             aria-label="Search blocks">
           <button class="search-clear" id="search-clear-btn" title="Clear search">✕</button>
+        </div>
+
+        <div class="sidebar-filter-bar" id="sidebar-filter-bar" role="tablist" aria-label="Filter blocks">
+          <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true" id="filter-btn-all">All</button>
+          <button class="filter-btn" data-filter="uncompleted" role="tab" aria-selected="false" id="filter-btn-uncompleted">Unreviewed</button>
+          <button class="filter-btn" data-filter="attention" role="tab" aria-selected="false" id="filter-btn-attention">Needs attention</button>
+        </div>
+        <div class="filter-summary" id="filter-summary-row" style="display:none;">
+          <span id="filter-summary-text">Showing 0 of 0</span>
+          <button class="btn-quiet btn-sm" id="btn-clear-all-filters" style="font-size:11px;padding:1px 4px;color:var(--green);font-weight:700;">Clear filters</button>
         </div>
       </div>
 
@@ -1840,16 +1962,28 @@
     <div id="word-preview-messages"></div>
 
     <label class="field-heading" for="word-project-name">Project / lesson name</label>
-    <input type="text" class="form-control" id="word-project-name" maxlength="150" style="margin-bottom:14px;">
+    <input type="text" class="form-control" id="word-project-name" maxlength="150" style="margin-bottom:12px;">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div>
+        <input type="text" class="form-control" id="word-search-input" placeholder="Search by ID, title, type…" aria-label="Search preview records">
+      </div>
+      <div>
+        <select class="form-control" id="word-section-filter" aria-label="Filter by section">
+          <option value="">All sections</option>
+        </select>
+      </div>
+    </div>
 
     <div class="preview-filter-bar">
       <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;">
         <input type="checkbox" id="check-show-unfilled" style="accent-color:var(--green);">
         <span>Show unfilled template records</span>
       </label>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button type="button" class="btn-sm" id="btn-select-visible">Select visible</button>
         <button type="button" class="btn-sm" id="btn-select-populated">Select populated</button>
-        <button type="button" class="btn-sm" id="btn-select-none">Select none</button>
+        <button type="button" class="btn-sm" id="btn-clear-selection">Clear selection</button>
       </div>
     </div>
 
@@ -1985,11 +2119,61 @@
         ]
       });
 
+      // Storage Keys
+      const PREFS_KEY = 'aptara-content-shelf-ui-state';
+
       // State
       let project = null;
       let selectedId = null;
       let workflowMode = 'prepare'; // 'prepare' or 'build'
       let currentView = (location.hash === '#workspace' && !new URLSearchParams(location.search).has('compact')) ? 'workspace' : (new URLSearchParams(location.search).has('compact') ? 'workspace' : 'start');
+      let sidebarFilter = 'all'; // 'all', 'uncompleted', 'attention'
+      let wordFilterSection = '';
+      let wordFilterQuery = '';
+
+      // Display Helpers (strip repeated source ID prefix in presentation only)
+      function getDisplayTitle(block) {
+        if (!block) return '';
+        const rawTitle = (block.title || 'Untitled block').trim();
+        const sourceId = (block.sourceId || '').trim();
+        if (sourceId) {
+          const escaped = sourceId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const prefixRegex = new RegExp('^' + escaped + '\\s*[:·–—-]\\s*', 'i');
+          const cleaned = rawTitle.replace(prefixRegex, '').trim();
+          if (cleaned) return cleaned;
+        }
+        const genericPrefixRegex = /^(?:S\d+[-_]B\d+|\bB\d+)\s*[:·–—-]\s*/i;
+        const cleaned = rawTitle.replace(genericPrefixRegex, '').trim();
+        return cleaned || rawTitle;
+      }
+
+      function getBlockSection(b) {
+        if (!b) return 'General';
+        if (b.sourceSection && b.sourceSection.trim()) return b.sourceSection.trim();
+        if (b.section && b.section.trim()) return b.section.trim();
+        const m = (b.sourceId || '').match(/^S(\d+)/i);
+        if (m) return 'Section ' + m[1];
+        return 'General';
+      }
+
+      function saveUIPreferences() {
+        try {
+          localStorage.setItem(PREFS_KEY, JSON.stringify({
+            currentView,
+            workflowMode,
+            selectedBlockId: selectedId,
+            sidebarFilter
+          }));
+        } catch {}
+      }
+
+      function loadUIPreferences() {
+        try {
+          const raw = localStorage.getItem(PREFS_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch {}
+        return {};
+      }
       let undoStack = null;
       let isCompanion = new URLSearchParams(location.search).has('compact');
       let isUnsaved = false;
@@ -2127,8 +2311,9 @@
         try {
           localStorage.setItem(ROLE_KEY, mode === 'prepare' ? 'id' : 'dev');
         } catch { }
+        saveUIPreferences();
         updateModeUI();
-        renderWorkspace();
+        render();
       }
 
       function updateModeUI() {
@@ -2142,7 +2327,7 @@
           $('#primary-action-text').textContent = 'Export handoff';
           $('#btn-primary-action').title = 'Export reviewed handoff file (.json) for Rise developer';
           if (headerImportBtn) {
-            headerImportBtn.innerHTML = '<span>📄 Import SB</span>';
+            headerImportBtn.innerHTML = '<span>📄 Import storyboard</span>';
             headerImportBtn.title = 'Import a completed Rise Word storyboard (.docx)';
           }
         } else {
@@ -2166,23 +2351,31 @@
 
         // Update header view nav tabs
         const btnViewStart = $('#btn-view-start');
-        const btnViewDash = $('#btn-view-dashboard');
+        const btnViewWork = $('#btn-view-workspace');
         if (btnViewStart) {
-          btnViewStart.style.background = currentView === 'start' ? 'var(--surface)' : 'transparent';
-          btnViewStart.style.color = currentView === 'start' ? 'var(--green)' : 'var(--ink-secondary)';
-          btnViewStart.style.boxShadow = currentView === 'start' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
+          btnViewStart.classList.toggle('active', currentView === 'start');
+          btnViewStart.setAttribute('aria-selected', currentView === 'start' ? 'true' : 'false');
         }
-        if (btnViewDash) {
-          btnViewDash.style.background = currentView === 'workspace' ? 'var(--surface)' : 'transparent';
-          btnViewDash.style.color = currentView === 'workspace' ? 'var(--green)' : 'var(--ink-secondary)';
-          btnViewDash.style.boxShadow = currentView === 'workspace' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
-          btnViewDash.disabled = !hasBlocks;
+        if (btnViewWork) {
+          btnViewWork.classList.toggle('active', currentView === 'workspace');
+          btnViewWork.setAttribute('aria-selected', currentView === 'workspace' ? 'true' : 'false');
+          btnViewWork.disabled = !hasBlocks;
+          btnViewWork.title = hasBlocks ? 'Go to block workspace' : 'No blocks in workspace yet';
         }
 
-        // Update Start Screen dashboard button text
-        const startDashText = $('#start-dashboard-text');
-        if (startDashText) {
-          startDashText.textContent = hasBlocks ? `Course Dashboard (${project.blocks.length} blocks)` : 'Course Dashboard';
+        // Update Start Screen resume card
+        const resumeCard = $('#start-resume-card');
+        if (resumeCard) {
+          if (hasBlocks) {
+            resumeCard.hidden = false;
+            $('#start-resume-title').textContent = project.name || 'Untitled project';
+            const reviewedCount = project.blocks.filter(b => b.reviewed).length;
+            const insertedCount = project.blocks.filter(b => b.done).length;
+            const statusText = workflowMode === 'prepare' ? `${reviewedCount}/${project.blocks.length} reviewed` : `${insertedCount}/${project.blocks.length} inserted`;
+            $('#start-resume-meta').textContent = `${project.blocks.length} blocks · ${statusText} · Saved in browser`;
+          } else {
+            resumeCard.hidden = true;
+          }
         }
 
         if (currentView === 'start') {
@@ -2239,49 +2432,131 @@
         const query = ($('#search-input').value || '').trim().toLowerCase();
         const container = $('#block-list-nav');
         const compactSelect = $('#compact-block-select');
+        const isPrep = workflowMode === 'prepare';
 
-        const filtered = project.blocks.map((b, idx) => ({ b, idx })).filter(({ b }) => {
+        // Compact select options (cleaned display titles)
+        compactSelect.innerHTML = project.blocks.map(b => {
+          const statusMark = (isPrep ? b.reviewed : b.done) ? '✓ ' : '';
+          const disp = getDisplayTitle(b);
+          const label = `${statusMark}${b.sourceId ? b.sourceId + ' · ' : ''}${disp}`;
+          return `<option value="${esc(b.id)}" ${b.id === selectedId ? 'selected' : ''}>${esc(label)}</option>`;
+        }).join('');
+
+        // 1. Search filtering
+        let filtered = project.blocks.map((b, idx) => ({ b, idx })).filter(({ b }) => {
           if (!query) return true;
           const searchStr = `${b.sourceId || ''} ${b.title} ${b.type} ${b.notes || ''} ${b.parts.map(p => p.text).join(' ')}`.toLowerCase();
           return searchStr.includes(query);
         });
 
-        // Compact select options
-        compactSelect.innerHTML = project.blocks.map(b => {
-          const statusMark = (workflowMode === 'prepare' ? b.reviewed : b.done) ? '✓ ' : '';
-          const label = `${statusMark}${b.sourceId ? b.sourceId + ' · ' : ''}${b.title}`;
-          return `<option value="${esc(b.id)}" ${b.id === selectedId ? 'selected' : ''}>${esc(label)}</option>`;
-        }).join('');
+        // 2. Tab filtering (All / Uncompleted / Needs attention)
+        if (sidebarFilter === 'uncompleted') {
+          filtered = filtered.filter(({ b }) => isPrep ? !b.reviewed : !b.done);
+        } else if (sidebarFilter === 'attention') {
+          filtered = filtered.filter(({ b }) =>
+            (b.missingFields && b.missingFields.length > 0) ||
+            (b.importWarnings && b.importWarnings.length > 0) ||
+            b.parts.some(p => !p.text.trim())
+          );
+        }
+
+        // Update filter buttons UI
+        const btnAll = $('#filter-btn-all');
+        const btnUnc = $('#filter-btn-uncompleted');
+        const btnAttn = $('#filter-btn-attention');
+        const summaryRow = $('#filter-summary-row');
+        const summaryText = $('#filter-summary-text');
+
+        if (btnAll) btnAll.classList.toggle('active', sidebarFilter === 'all');
+        if (btnUnc) {
+          btnUnc.classList.toggle('active', sidebarFilter === 'uncompleted');
+          btnUnc.textContent = isPrep ? 'Unreviewed' : 'Not inserted';
+        }
+        if (btnAttn) btnAttn.classList.toggle('active', sidebarFilter === 'attention');
+
+        const isFiltered = sidebarFilter !== 'all' || query;
+        if (summaryRow && summaryText) {
+          if (isFiltered) {
+            summaryRow.style.display = 'flex';
+            summaryText.textContent = `Showing ${filtered.length} of ${project.blocks.length} blocks`;
+          } else {
+            summaryRow.style.display = 'none';
+          }
+        }
 
         if (!filtered.length) {
-          container.innerHTML = `<div style="padding:28px 12px;text-align:center;color:var(--muted);font-size:13px;">No matching blocks found</div>`;
+          container.innerHTML = `
+            <div style="padding:28px 12px;text-align:center;color:var(--muted);font-size:13px;">
+              <b>No matching blocks found</b>
+              ${isFiltered ? '<div style="margin-top:8px;"><button class="btn-sm" id="btn-empty-clear-filters">Clear filters</button></div>' : ''}
+            </div>
+          `;
           return;
         }
 
-        const isPrep = workflowMode === 'prepare';
-        container.innerHTML = filtered.map(({ b, idx }) => {
-          const isSelected = b.id === selectedId;
-          const isComplete = isPrep ? b.reviewed : b.done;
-          const hasFlags = (b.missingFields && b.missingFields.length > 0) ||
-            (b.importWarnings && b.importWarnings.length > 0) ||
-            b.parts.some(p => !p.text.trim());
+        // Group by section if multiple sections exist
+        const sectionsMap = new Map();
+        for (const item of filtered) {
+          const sec = getBlockSection(item.b);
+          if (!sectionsMap.has(sec)) sectionsMap.set(sec, []);
+          sectionsMap.get(sec).push(item);
+        }
 
-          return `
-            <button class="nav-block-btn ${isSelected ? 'active' : ''}" data-block-id="${esc(b.id)}" ${isSelected ? 'aria-current="true"' : ''}>
-              <div class="nav-status-indicator ${isComplete ? 'complete' : ''}" title="${isComplete ? (isPrep ? 'Reviewed' : 'Inserted') : (isPrep ? 'Unreviewed' : 'Not inserted')}">
-                ${isComplete ? '✓' : String(idx + 1).padStart(2, '0')}
-              </div>
-              <div class="nav-block-content">
-                <div class="nav-block-row">
-                  ${b.sourceId ? `<span class="nav-source-id">${esc(b.sourceId)}</span>` : ''}
-                  <span class="nav-block-type" title="${esc(b.type)}">${esc(b.type)}</span>
+        const selectedBlock = project.blocks.find(x => x.id === selectedId);
+        const activeSection = selectedBlock ? getBlockSection(selectedBlock) : '';
+
+        if (sectionsMap.size <= 1 && sectionsMap.has('General')) {
+          container.innerHTML = filtered.map(({ b, idx }) => renderBlockNavItem(b, idx, isPrep)).join('');
+        } else {
+          let html = '';
+          for (const [secName, secItems] of sectionsMap.entries()) {
+            const hasSelected = secItems.some(x => x.b.id === selectedId);
+            const isOpen = hasSelected || secName === activeSection || sectionsMap.size <= 3;
+            html += `
+              <details class="sidebar-section-group" ${isOpen ? 'open' : ''} data-section="${esc(secName)}">
+                <summary class="sidebar-section-summary">
+                  <span class="sidebar-section-title">${esc(secName)}</span>
+                  <span class="sidebar-section-count">${secItems.length}</span>
+                </summary>
+                <div class="sidebar-section-blocks">
+                  ${secItems.map(({ b, idx }) => renderBlockNavItem(b, idx, isPrep)).join('')}
                 </div>
-                <div class="nav-block-title" title="${esc(b.title)}">${esc(b.title)}</div>
+              </details>
+            `;
+          }
+          container.innerHTML = html;
+        }
+
+        // Keep active button visible
+        const activeBtn = container.querySelector('.nav-block-btn.active');
+        if (activeBtn) {
+          activeBtn.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function renderBlockNavItem(b, idx, isPrep) {
+        const isSelected = b.id === selectedId;
+        const isComplete = isPrep ? b.reviewed : b.done;
+        const dispTitle = getDisplayTitle(b);
+        const hasFlags = (b.missingFields && b.missingFields.length > 0) ||
+          (b.importWarnings && b.importWarnings.length > 0) ||
+          b.parts.some(p => !p.text.trim());
+
+        return `
+          <button class="nav-block-btn ${isSelected ? 'active' : ''}" data-block-id="${esc(b.id)}" ${isSelected ? 'aria-current="true"' : ''}>
+            <div class="nav-status-indicator ${isComplete ? 'complete' : ''}" title="${isComplete ? (isPrep ? 'Reviewed' : 'Inserted') : (isPrep ? 'Unreviewed' : 'Not inserted')}">
+              ${isComplete ? '✓' : String(idx + 1).padStart(2, '0')}
+            </div>
+            <div class="nav-block-content">
+              <div class="nav-block-row">
+                ${b.sourceId ? `<span class="nav-source-id">${esc(b.sourceId)}</span>` : ''}
+                <span class="nav-block-type" title="${esc(b.type)}">${esc(b.type)}</span>
               </div>
-              ${hasFlags && isPrep ? `<span class="nav-warning-dot" title="Has review flags or unfilled fields"></span>` : ''}
-            </button>
-          `;
-        }).join('');
+              <div class="nav-block-title" title="${esc(dispTitle)}">${esc(dispTitle)}</div>
+            </div>
+            ${hasFlags && isPrep ? `<span class="nav-warning-dot" title="Has review flags or unfilled fields"></span>` : ''}
+          </button>
+        `;
       }
 
       function renderCurrentBlock() {
@@ -2334,7 +2609,7 @@
             </div>
 
             <div class="block-title-row">
-              <h1 class="block-heading">${esc(b.title)}</h1>
+              <h1 class="block-heading">${esc(getDisplayTitle(b))}</h1>
             </div>
 
             <!-- Mode Action Checkbox Bar -->
@@ -2344,7 +2619,7 @@
                 <span>${isPrep ? 'Mark content reviewed for handoff' : 'Mark block inserted in Rise'}</span>
               </label>
               <span class="mode-action-hint">
-                ${isPrep ? 'Reviewed acknowledges content check; it does not certified instructional correctness.' : 'Tracks your build progress; does not automatically insert into Rise.'}
+                ${isPrep ? 'Marked reviewed by the instructional designer.' : 'Tracks your build progress; does not automatically insert into Rise.'}
               </span>
             </div>
           </div>
@@ -2382,13 +2657,11 @@
                 <div class="field-card">
                   <div class="field-header">
                     <span class="field-label">${esc(p.label)}</span>
-                    <button class="copy-btn" data-copy-text="${esc(p.text)}" ${!p.text.trim() ? 'disabled' : ''} title="${p.text.trim() ? 'Copy this text' : 'Field is empty'}">
+                    <button class="copy-btn" data-copy-text="${esc(p.text)}" aria-label="${esc('Copy ' + p.label.toLowerCase())}" ${!p.text.trim() ? 'disabled' : ''} title="${p.text.trim() ? 'Copy ' + esc(p.label) : 'Field is empty'}">
                       ⧉ Copy
                     </button>
                   </div>
-                  <div class="field-text ${/heading|title/i.test(p.label) ? 'heading-style' : ''} ${!p.text.trim() ? 'empty-text' : ''}">
-                    ${esc(p.text) || 'Empty in storyboard — add approved text or leave blank if optional.'}
-                  </div>
+                  <div class="field-text ${/heading|title/i.test(p.label) ? 'heading-style' : ''} ${!p.text.trim() ? 'empty-text' : ''}">${esc(p.text) || 'Empty in storyboard — add approved text or leave blank if optional.'}</div>
                 </div>
               `).join('')}
             </div>
@@ -2397,11 +2670,21 @@
           <!-- Assets Section (Attached vs Filename Only) -->
           ${renderAssetsSection(b)}
 
-          <!-- Bottom Navigation Controls -->
+          <!-- Bottom Navigation Controls with Completion Action -->
           <div class="bottom-nav">
-            <button class="btn-sm" id="btn-prev-block" ${idx === 0 ? 'disabled' : ''}>← Previous block</button>
+            <button class="btn-sm" id="btn-prev-block" ${idx === 0 ? 'disabled' : ''} aria-label="Previous block">← Previous block</button>
             <div style="font-size:12px;color:var(--muted);">Block ${idx + 1} of ${total}</div>
-            <button class="btn-sm btn-primary" id="btn-next-block" ${idx === total - 1 ? 'disabled' : ''}>Next block →</button>
+            <div style="display:flex;gap:8px;">
+              ${(isPrep ? b.reviewed : b.done) ? `
+                <button class="btn-sm btn-primary" id="btn-next-block" ${idx === total - 1 ? 'disabled' : ''}>
+                  ${idx === total - 1 ? 'Last block' : 'Next block →'}
+                </button>
+              ` : `
+                <button class="btn-sm btn-primary btn-complete-next" id="btn-complete-and-next">
+                  ${isPrep ? (idx === total - 1 ? '✓ Mark reviewed' : '✓ Mark reviewed & next →') : (idx === total - 1 ? '✓ Mark inserted' : '✓ Mark inserted & next →')}
+                </button>
+              `}
+            </div>
           </div>
         `;
       }
@@ -2437,16 +2720,47 @@
           return groups.length ? groups : [{ title: '', parts }];
         }
 
-        // Knowledge Check: group question, options, feedback
-        if (lowerType.includes('knowledge') || lowerType.includes('quiz') || lowerType.includes('check')) {
+        // Flashcards: group front and back
+        if (lowerType.includes('flashcard') || lowerType.includes('card')) {
+          const groups = [];
+          const cardMap = new Map();
+          const generalParts = [];
+
+          for (const p of parts) {
+            const m = p.label.match(/^(?:Card|Flashcard)\s*(\d+)[\s·:-]*(.*)$/i);
+            if (m) {
+              const num = m[1];
+              if (!cardMap.has(num)) cardMap.set(num, []);
+              cardMap.get(num).push(p);
+            } else if (/front/i.test(p.label) || /back/i.test(p.label)) {
+              const numMatch = p.label.match(/\d+/);
+              const cardNum = numMatch ? numMatch[0] : '1';
+              if (!cardMap.has(cardNum)) cardMap.set(cardNum, []);
+              cardMap.get(cardNum).push(p);
+            } else {
+              generalParts.push(p);
+            }
+          }
+
+          if (generalParts.length) groups.push({ title: 'Overview', parts: generalParts });
+          for (const [num, cParts] of cardMap.entries()) {
+            groups.push({ title: `Card ${num}`, parts: cParts });
+          }
+          return groups.length ? groups : [{ title: '', parts }];
+        }
+
+        // Knowledge Check / Quiz: group question, options, answer key, feedback
+        if (lowerType.includes('knowledge') || lowerType.includes('quiz') || lowerType.includes('check') || lowerType.includes('assessment')) {
           const qParts = [];
           const optParts = [];
+          const ansParts = [];
           const fbParts = [];
           const other = [];
 
           for (const p of parts) {
-            if (/^question/i.test(p.label)) qParts.push(p);
+            if (/^question|^prompt/i.test(p.label)) qParts.push(p);
             else if (/^option|^choice/i.test(p.label)) optParts.push(p);
+            else if (/correct answer|^key|^answer key/i.test(p.label)) ansParts.push(p);
             else if (/feedback/i.test(p.label)) fbParts.push(p);
             else other.push(p);
           }
@@ -2454,6 +2768,7 @@
           const groups = [];
           if (qParts.length) groups.push({ title: 'Question', parts: qParts });
           if (optParts.length) groups.push({ title: 'Options', parts: optParts });
+          if (ansParts.length) groups.push({ title: 'Answer Key', parts: ansParts });
           if (fbParts.length) groups.push({ title: 'Feedback', parts: fbParts });
           if (other.length) groups.push({ title: 'Additional Details', parts: other });
           return groups.length ? groups : [{ title: '', parts }];
@@ -2539,6 +2854,7 @@
         const navItem = e.target.closest('[data-block-id]');
         if (navItem) {
           selectedId = navItem.dataset.blockId;
+          saveUIPreferences();
           render();
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
@@ -2551,6 +2867,36 @@
           } else {
             launchCompanion();
           }
+          return;
+        }
+
+        // Bottom Complete & Next Action
+        if (e.target.closest('#btn-complete-and-next')) {
+          const b = project.blocks.find(x => x.id === selectedId);
+          if (b) {
+            rememberUndo();
+            const isPrep = workflowMode === 'prepare';
+            if (isPrep) b.reviewed = true;
+            else b.done = true;
+            const idx = project.blocks.indexOf(b);
+            if (idx < project.blocks.length - 1) {
+              selectedId = project.blocks[idx + 1].id;
+            }
+            saveToStorage();
+            saveUIPreferences();
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+          return;
+        }
+
+        // Empty filter clear
+        if (e.target.id === 'btn-empty-clear-filters') {
+          sidebarFilter = 'all';
+          $('#search-input').value = '';
+          $('#search-clear-btn').style.display = 'none';
+          saveUIPreferences();
+          renderSidebarList();
           return;
         }
 
@@ -2629,26 +2975,76 @@
       $('#btn-mode-prepare').onclick = () => setWorkflowMode('prepare');
       $('#btn-mode-build').onclick = () => setWorkflowMode('build');
 
-      // View switching (Start Screen vs Course Dashboard)
+      // View switching (Start Screen vs Course Workspace)
       $('#btn-view-start').onclick = () => {
         currentView = 'start';
+        location.hash = '#start';
+        saveUIPreferences();
         render();
       };
-      $('#btn-view-dashboard').onclick = () => {
-        if (!project || !project.blocks.length) {
-          loadSampleLesson();
-        }
-        currentView = 'workspace';
-        render();
-      };
-      const startDashBtn = $('#start-btn-dashboard');
-      if (startDashBtn) {
-        startDashBtn.onclick = () => {
+      const btnViewWorkspace = $('#btn-view-workspace') || $('#btn-view-dashboard');
+      if (btnViewWorkspace) {
+        btnViewWorkspace.onclick = () => {
           if (!project || !project.blocks.length) {
             loadSampleLesson();
           }
           currentView = 'workspace';
+          location.hash = '#workspace';
+          saveUIPreferences();
           render();
+        };
+      }
+      const startResumeBtn = $('#start-btn-resume');
+      if (startResumeBtn) {
+        startResumeBtn.onclick = () => {
+          currentView = 'workspace';
+          location.hash = '#workspace';
+          saveUIPreferences();
+          render();
+        };
+      }
+
+      // Sidebar Filter Bar
+      const filterBar = $('#sidebar-filter-bar');
+      if (filterBar) {
+        filterBar.onclick = e => {
+          const btn = e.target.closest('.filter-btn');
+          if (btn && btn.dataset.filter) {
+            sidebarFilter = btn.dataset.filter;
+            saveUIPreferences();
+            renderSidebarList();
+          }
+        };
+      }
+      const btnClearFilters = $('#btn-clear-all-filters');
+      if (btnClearFilters) {
+        btnClearFilters.onclick = () => {
+          sidebarFilter = 'all';
+          $('#search-input').value = '';
+          $('#search-clear-btn').style.display = 'none';
+          saveUIPreferences();
+          renderSidebarList();
+        };
+      }
+
+      // Companion Menu & Actions
+      const btnCompMenu = $('#btn-companion-menu');
+      if (btnCompMenu) {
+        btnCompMenu.onclick = e => {
+          e.stopPropagation();
+          $('#companion-dropdown-menu').classList.toggle('show');
+        };
+      }
+      const menuCompFull = $('#menu-comp-full-workspace');
+      if (menuCompFull) {
+        menuCompFull.onclick = () => {
+          window.open(location.pathname + '#workspace', '_blank');
+        };
+      }
+      const menuCompBackup = $('#menu-comp-save-backup');
+      if (menuCompBackup) {
+        menuCompBackup.onclick = () => {
+          exportHandoff(true);
         };
       }
 
@@ -2666,6 +3062,7 @@
       // Compact select
       $('#compact-block-select').onchange = e => {
         selectedId = e.target.value;
+        saveUIPreferences();
         render();
       };
 
@@ -2691,6 +3088,7 @@
         const next = project.blocks[idx + delta];
         if (next) {
           selectedId = next.id;
+          saveUIPreferences();
           render();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -2963,37 +3361,74 @@
 
         const total = wordDraft.total;
         const populated = total - wordDraft.empty;
-        const empty = wordDraft.empty;
+        const unfilled = wordDraft.empty;
         const showUnfilled = $('#check-show-unfilled').checked;
+        const query = (wordFilterQuery || '').trim().toLowerCase();
+        const sectionFilter = (wordFilterSection || '').trim().toLowerCase();
+
+        // Populate section dropdown once
+        const sectionSelect = $('#word-section-filter');
+        if (sectionSelect && sectionSelect.options.length <= 1) {
+          const sections = new Set();
+          for (const b of wordDraft.blocks) {
+            const sec = (b.sourceSection || getBlockSection(b) || '').trim();
+            if (sec && sec !== 'General') sections.add(sec);
+          }
+          for (const s of sections) {
+            const opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            sectionSelect.appendChild(opt);
+          }
+        }
+
+        // Filter blocks
+        const visibleItems = wordDraft.blocks.map((b, i) => ({ b, i })).filter(({ b }) => {
+          if (!b.populated && !showUnfilled) return false;
+          if (sectionFilter) {
+            const bSec = (b.sourceSection || getBlockSection(b) || '').toLowerCase();
+            if (!bSec.includes(sectionFilter)) return false;
+          }
+          if (query) {
+            const searchStr = `${b.sourceId || ''} ${b.title || ''} ${b.type || ''}`.toLowerCase();
+            if (!searchStr.includes(query)) return false;
+          }
+          return true;
+        });
 
         $('#word-preview-summary').innerHTML = `
-          <b>${total} block records found:</b> ${populated} populated, ${empty} unfilled template records.<br>
-          <span style="color:var(--muted);font-size:12px;">Instructional outline rows and metadata were excluded.</span>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;">
+            <span><b>${total}</b> block records found</span>
+            <span>Populated: <b>${populated}</b></span>
+            <span>Unfilled: <b>${unfilled}</b></span>
+            <span>Visible: <b>${visibleItems.length}</b></span>
+            <span style="color:var(--green);font-weight:700;">Selected: <b>${wordChoices.size}</b></span>
+          </div>
         `;
 
-        const shown = wordDraft.blocks.map((b, i) => ({ b, i })).filter(({ b }) => b.populated || showUnfilled);
-
-        if (!shown.length) {
+        if (!visibleItems.length) {
           $('#word-records-container').innerHTML = `
             <div style="padding:28px;text-align:center;color:var(--muted);font-size:13px;">
-              <b>All extracted records in this template are unfilled.</b><br>
-              Check "Show unfilled template records" above to select blank blocks to import.
+              <b>No matching records in this preview.</b><br>
+              Adjust search or check "Show unfilled template records".
             </div>
           `;
         } else {
-          $('#word-records-container').innerHTML = shown.map(({ b, i }) => {
+          $('#word-records-container').innerHTML = visibleItems.map(({ b, i }) => {
             const isChecked = wordChoices.has(i);
+            const dispTitle = getDisplayTitle(b);
             const warningCount = (b.importWarnings?.length || 0) + (b.missingFields?.length || 0);
             return `
               <div class="preview-record-item">
                 <div class="preview-record-main">
                   <input type="checkbox" class="preview-record-check" data-choice-index="${i}" ${isChecked ? 'checked' : ''} id="wc-${i}">
-                  <div style="flex:1;">
+                  <div style="flex:1;min-width:0;">
                     <label for="wc-${i}" style="cursor:pointer;font-weight:700;font-size:13px;">
-                      ${esc(b.title)}
+                      ${b.sourceId ? `<span class="nav-source-id" style="font-size:10px;padding:1px 5px;margin-right:4px;background:#eaf3ee;border-radius:3px;">${esc(b.sourceId)}</span>` : ''}
+                      ${esc(dispTitle)}
                     </label>
                     <div style="font-size:11px;color:var(--muted);margin-top:2px;">
-                      ${esc(b.type)} · ${b.parts.filter(p => p.text).length} populated fields · ${b.assets.length} asset(s)
+                      ${esc(b.type)} · ${b.parts.filter(p => p.text).length} fields · ${b.assets.length} asset(s)
                       ${!b.populated ? '<span class="flag-pill">Unfilled</span>' : ''}
                       ${warningCount > 0 ? `<span class="flag-pill">${warningCount} flag(s)</span>` : ''}
                     </div>
@@ -3035,14 +3470,53 @@
       };
 
       $('#check-show-unfilled').onchange = drawWordPreviewModal;
+      const wordSearchInput = $('#word-search-input');
+      if (wordSearchInput) {
+        wordSearchInput.oninput = e => {
+          wordFilterQuery = e.target.value;
+          drawWordPreviewModal();
+        };
+      }
+      const wordSecSelect = $('#word-section-filter');
+      if (wordSecSelect) {
+        wordSecSelect.onchange = e => {
+          wordFilterSection = e.target.value;
+          drawWordPreviewModal();
+        };
+      }
+      const btnSelVis = $('#btn-select-visible');
+      if (btnSelVis) {
+        btnSelVis.onclick = () => {
+          if (!wordDraft) return;
+          const showUnfilled = $('#check-show-unfilled').checked;
+          const query = (wordFilterQuery || '').trim().toLowerCase();
+          const sectionFilter = (wordFilterSection || '').trim().toLowerCase();
+          wordDraft.blocks.forEach((b, i) => {
+            if (!b.populated && !showUnfilled) return;
+            if (sectionFilter) {
+              const bSec = (b.sourceSection || getBlockSection(b) || '').toLowerCase();
+              if (!bSec.includes(sectionFilter)) return;
+            }
+            if (query) {
+              const searchStr = `${b.sourceId || ''} ${b.title || ''} ${b.type || ''}`.toLowerCase();
+              if (!searchStr.includes(query)) return;
+            }
+            wordChoices.add(i);
+          });
+          drawWordPreviewModal();
+        };
+      }
       $('#btn-select-populated').onclick = () => {
         wordChoices = new Set(wordDraft.blocks.map((b, i) => b.populated ? i : -1).filter(i => i >= 0));
         drawWordPreviewModal();
       };
-      $('#btn-select-none').onclick = () => {
-        wordChoices.clear();
-        drawWordPreviewModal();
-      };
+      const btnClearSel = $('#btn-clear-selection') || $('#btn-select-none');
+      if (btnClearSel) {
+        btnClearSel.onclick = () => {
+          wordChoices.clear();
+          drawWordPreviewModal();
+        };
+      }
       $('#btn-cancel-word-preview').onclick = () => $('#word-preview-dialog').close();
 
       $('#btn-apply-word-import').onclick = () => {
@@ -3342,11 +3816,9 @@
         if (isCompanion) {
           document.body.classList.add('companion-mode');
           workflowMode = 'build'; // Companion window defaults to Rise developer build mode!
-        } else {
-          try {
-            const savedRole = localStorage.getItem(ROLE_KEY);
-            if (savedRole === 'dev') workflowMode = 'build';
-          } catch { }
+          currentView = 'workspace';
+          const compBox = $('#companion-menu-box');
+          if (compBox) compBox.style.display = 'block';
         }
 
         // Try load existing project from localStorage
@@ -3356,11 +3828,46 @@
             const parsed = JSON.parse(stored);
             if (validateProject(parsed)) {
               project = parsed;
-              selectedId = project.blocks[0]?.id || null;
             }
           }
         } catch (err) {
           console.error('Storage parse error:', err);
+        }
+
+        // Restore lightweight UI preferences
+        const prefs = loadUIPreferences();
+        if (!isCompanion) {
+          if (prefs.workflowMode === 'build' || prefs.workflowMode === 'prepare') {
+            workflowMode = prefs.workflowMode;
+          } else {
+            try {
+              const savedRole = localStorage.getItem(ROLE_KEY);
+              if (savedRole === 'dev') workflowMode = 'build';
+            } catch {}
+          }
+          if (prefs.sidebarFilter) {
+            sidebarFilter = prefs.sidebarFilter;
+          }
+        }
+
+        const hasBlocks = project && Array.isArray(project.blocks) && project.blocks.length > 0;
+        if (hasBlocks) {
+          if (prefs.selectedBlockId && project.blocks.some(b => b.id === prefs.selectedBlockId)) {
+            selectedId = prefs.selectedBlockId;
+          } else {
+            selectedId = project.blocks[0].id;
+          }
+
+          if (location.hash === '#start') {
+            currentView = 'start';
+          } else if (prefs.currentView) {
+            currentView = prefs.currentView;
+          } else {
+            currentView = 'workspace';
+          }
+        } else {
+          currentView = 'start';
+          selectedId = null;
         }
 
         updateModeUI();

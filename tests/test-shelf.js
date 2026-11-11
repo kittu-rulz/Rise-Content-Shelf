@@ -30,6 +30,7 @@ async function runTests() {
     console.log('\n[1] Testing Start Experience (No saved project)...');
     const context1 = await browser.newContext();
     const page1 = await context1.newPage();
+    page1.on('console', msg => console.log('BROWSER LOG:', msg.text()));
     await page1.goto(INDEX_URL);
 
     // Verify start screen is visible when no project is stored
@@ -185,6 +186,7 @@ async function runTests() {
     await companionPage.waitForTimeout(200);
     const scroll360 = await companionPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     assert(!scroll360, 'Companion view has no horizontal overflow even at narrow 360px width');
+    await companionPage.close();
 
     // 9. Reorder, Duplicate, Undo
     console.log('\n[9] Testing Reorder, Duplicate & Undo...');
@@ -200,6 +202,78 @@ async function runTests() {
     await page1.waitForTimeout(200);
     const restoredCount = await page1.locator('.nav-block-btn').count();
     assert(restoredCount === 67, 'Undo restored block count back to 67');
+
+    // 10. Title Presentation (Repeated IDs stripped in UI)
+    console.log('\n[10] Testing Title Presentation (No duplicate IDs in title)...');
+    const firstHeading = await page1.locator('.block-heading').textContent();
+    const firstBadge = await page1.locator('.badge-source').textContent();
+    assert(!firstHeading.startsWith(firstBadge), 'Block heading presentation does not repeat the badge source ID');
+    assert(firstHeading.trim().length > 0, 'Clean readable title is displayed in header');
+
+    // 11. Large Project Navigation & Section Grouping
+    console.log('\n[11] Testing Section Grouping for Large Projects...');
+    const sectionGroups = await page1.locator('.sidebar-section-group').count();
+    assert(sectionGroups > 0, 'Sidebar groups 67 blocks into collapsible section details');
+    const openSection = await page1.locator('.sidebar-section-group[open]').count();
+    assert(openSection >= 1, 'Current active block section is automatically kept open');
+
+    // 12. Sidebar Filters (All, Uncompleted, Needs attention)
+    console.log('\n[12] Testing Sidebar Filtering...');
+    await page1.click('#filter-btn-uncompleted');
+    await page1.waitForTimeout(100);
+    const uncompletedFilterActive = await page1.locator('#filter-btn-uncompleted.active').count();
+    assert(uncompletedFilterActive === 1, 'Uncompleted filter tab is marked active');
+    const filterSummaryVisible = await page1.isVisible('#filter-summary-row');
+    assert(filterSummaryVisible, 'Filter summary row is displayed when non-default filter is active');
+
+    // Clear filters
+    await page1.click('#btn-clear-all-filters');
+    await page1.waitForTimeout(100);
+    const allFilterActive = await page1.locator('#filter-btn-all.active').count();
+    assert(allFilterActive === 1, 'All filter tab is restored on Clear filters');
+
+    // 13. Bottom Completion & Advancement Action
+    console.log('\n[13] Testing Bottom Completion & Next Action...');
+    const completeNextBtn = await page1.locator('#btn-complete-and-next');
+    assert(await completeNextBtn.isVisible(), 'Bottom completion and next action button is present');
+    const initialSelectedBlockId = await page1.locator('.nav-block-btn.active').getAttribute('data-block-id');
+    await completeNextBtn.click();
+    await page1.waitForTimeout(200);
+    const nextSelectedBlockId = await page1.locator('.nav-block-btn.active').getAttribute('data-block-id');
+    assert(initialSelectedBlockId !== nextSelectedBlockId, 'Clicking Complete & Next advances to next block');
+
+    // 14. Refresh State Restoration
+    console.log('\n[14] Testing Refresh State Restoration...');
+    await page1.reload();
+    await page1.waitForTimeout(500);
+    const isWorkspaceVisibleAfterReload = await page1.isVisible('#block-content-view');
+    const isStartHiddenAfterReload = !(await page1.isVisible('#start-screen-container'));
+    assert(isWorkspaceVisibleAfterReload && isStartHiddenAfterReload, 'Page reload restores workspace view without resetting to start screen');
+    const currentBlockAfterReload = await page1.locator('.nav-block-btn.active').getAttribute('data-block-id');
+    assert(currentBlockAfterReload === nextSelectedBlockId, 'Selected block is preserved across page refresh');
+
+    // Test Resume Card on Start Screen
+    await page1.click('#btn-view-start');
+    await page1.waitForTimeout(200);
+    const isResumeCardVisible = await page1.isVisible('#start-resume-card');
+    assert(isResumeCardVisible, 'Prominent Resume project card is visible on start screen when project exists');
+    await page1.click('#start-btn-resume');
+    await page1.waitForTimeout(200);
+    const isWorkspaceBack = await page1.isVisible('#block-content-view');
+    assert(isWorkspaceBack, 'Clicking Resume project returns directly to workspace');
+
+    // 15. Companion Mode Menu
+    console.log('\n[15] Testing Companion Dropdown Menu...');
+    const compPage = await context1.newPage();
+    await compPage.setViewportSize({ width: 420, height: 750 });
+    await compPage.goto(`${INDEX_URL}?compact=1`);
+    await compPage.waitForSelector('body.companion-mode');
+    const compMenuBtn = await compPage.locator('#btn-companion-menu');
+    assert(await compMenuBtn.isVisible(), 'Companion header features dedicated menu trigger');
+    await compMenuBtn.click();
+    const compDropdown = await compPage.locator('#companion-dropdown-menu');
+    assert(await compDropdown.isVisible(), 'Companion dropdown opens with workspace and backup actions');
+    await compPage.close();
 
     await browser.close();
   } catch (err) {
