@@ -1,0 +1,8 @@
+# Test screenshots
+*.png
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

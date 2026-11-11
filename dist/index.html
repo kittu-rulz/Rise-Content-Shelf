@@ -1,0 +1,3308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aptara Content Shelf</title>
+  <meta name="description"
+    content="A simple companion for preparing storyboard content and transferring it into Articulate Rise.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a252c;
+      --ink-secondary: #4d5c66;
+      --muted: #6b7a84;
+      --line: #dbe2e0;
+      --line-subtle: #ebf0ee;
+      --green: #24715c;
+      --green-hover: #1b5746;
+      --green-light: #eaf3ee;
+      --green-border: #bcd5c7;
+      --bg: #f4f6f5;
+      --surface: #ffffff;
+      --surface-subtle: #f8faf9;
+      --amber-bg: #fff7eb;
+      --amber-border: #f2d29b;
+      --amber-ink: #855208;
+      --danger: #b3392b;
+      --danger-bg: #fdf2f0;
+      --radius-sm: 6px;
+      --radius-md: 9px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 3px rgba(18, 34, 28, 0.06);
+      --shadow-md: 0 4px 12px rgba(18, 34, 28, 0.08);
+      --shadow-lg: 0 12px 32px rgba(18, 34, 28, 0.12);
+      --focus-ring: 0 0 0 3px rgba(36, 113, 92, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.55 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-weight: 600;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--surface-subtle);
+      border-color: #c2ccc7;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    a:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+      border-color: var(--green);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #ffffff;
+      border-color: var(--green);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--green-hover);
+      border-color: var(--green-hover);
+      color: #ffffff;
+    }
+
+    .btn-quiet {
+      background: transparent;
+      border-color: transparent;
+      color: var(--muted);
+      padding: 6px 10px;
+    }
+
+    .btn-quiet:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: transparent;
+      color: var(--ink);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-danger {
+      color: var(--danger);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: var(--danger-bg);
+      border-color: #f1b9b1;
+      color: var(--danger);
+    }
+
+    /* Top App Header */
+    header.app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      padding: 0 24px;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1540px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--green);
+      color: #ffffff;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-company {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .brand-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--line);
+      flex-shrink: 0;
+    }
+
+    .project-name-btn {
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .project-name-btn:hover {
+      background: var(--surface-subtle);
+      border-color: var(--line);
+    }
+
+    /* Workflow Mode Selector */
+    .mode-toggle {
+      display: inline-flex;
+      background: var(--bg);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+    }
+
+    .mode-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .mode-btn:hover:not(.active) {
+      color: var(--ink);
+    }
+
+    .mode-btn.active {
+      background: var(--surface);
+      color: var(--green);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .mode-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #e2e8e5;
+      color: var(--ink-secondary);
+    }
+
+    .mode-btn.active .mode-badge {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .save-indicator {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .save-indicator.saved {
+      color: var(--green);
+    }
+
+    .save-indicator.warning {
+      color: var(--amber-ink);
+      background: var(--amber-bg);
+      font-weight: 600;
+    }
+
+    /* More Menu Dropdown */
+    .menu-container {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      width: 220px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 6px 0;
+      z-index: 50;
+      display: none;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .menu-item {
+      width: 100%;
+      text-align: left;
+      padding: 8px 14px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-item:hover {
+      background: var(--surface-subtle);
+      color: var(--green);
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--line-subtle);
+      margin: 4px 0;
+    }
+
+    /* Persistent Alerts */
+    #save-alert,
+    #demo-banner {
+      padding: 10px 24px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid;
+    }
+
+    #save-alert {
+      background: var(--amber-bg);
+      border-color: var(--amber-border);
+      color: var(--amber-ink);
+    }
+
+    #save-alert[hidden],
+    #demo-banner[hidden] {
+      display: none;
+    }
+
+    #demo-banner {
+      background: #e9f2ef;
+      border-color: #c7ded3;
+      color: #1a5744;
+      font-weight: 500;
+    }
+
+    /* Main Workspace Layout */
+    .workspace-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      max-width: 1540px;
+      width: 100%;
+      margin: 0 auto;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* Sidebar Navigation */
+    aside.sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 60px);
+      position: sticky;
+      top: 60px;
+    }
+
+    .sidebar-header {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--line-subtle);
+    }
+
+    .progress-box {
+      margin-bottom: 12px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: #e4ebe7;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      transition: width 0.25s ease;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 30px 8px 11px;
+      font-size: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      padding: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .block-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px;
+    }
+
+    .nav-block-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin-bottom: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: transparent;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.12s ease;
+      position: relative;
+    }
+
+    .nav-block-btn:hover {
+      background: var(--surface-subtle);
+      border-color: var(--line-subtle);
+    }
+
+    .nav-block-btn.active {
+      background: var(--green-light);
+      border-color: var(--green-border);
+      color: var(--green-hover);
+    }
+
+    .nav-status-indicator {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid #cfd9d4;
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--muted);
+    }
+
+    .nav-block-btn.active .nav-status-indicator {
+      border-color: var(--green);
+    }
+
+    .nav-status-indicator.complete {
+      background: var(--green);
+      border-color: var(--green);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .nav-block-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .nav-block-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .nav-source-id {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.3px;
+    }
+
+    .nav-block-type {
+      font-size: 10px;
+      color: var(--muted);
+      background: #edf1ef;
+      padding: 1px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .nav-block-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .nav-block-btn.active .nav-block-title {
+      color: #124c3d;
+    }
+
+    .nav-warning-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d97706;
+      flex-shrink: 0;
+      margin-top: 6px;
+      title: 'Has review flags';
+    }
+
+    .sidebar-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--line-subtle);
+      background: var(--surface);
+    }
+
+    .sidebar-footer button {
+      width: 100%;
+    }
+
+    /* Content Area (Main) */
+    main.content-area {
+      padding: 28px 40px;
+      max-width: 980px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Compact View / Mobile Block Selector */
+    .compact-block-bar {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .compact-block-select {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+    }
+
+    /* Current Block Header */
+    .block-header-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .block-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .block-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-source {
+      background: #e4eee9;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-type {
+      background: #edf1f0;
+      color: var(--ink-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .badge-review-state {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #f1f3f2;
+      color: var(--muted);
+    }
+
+    .badge-review-state.reviewed {
+      background: #e5f3eb;
+      color: #1e6e4f;
+    }
+
+    .block-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .block-heading {
+      font-family: 'Manrope', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .block-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* Mode Action Banner */
+    .mode-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 14px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mode-action-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .mode-action-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .mode-action-hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Review Flags Box */
+    .review-flags-panel {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      color: var(--amber-ink);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .review-flags-panel summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .review-flags-panel ul {
+      margin: 8px 0 0 18px;
+    }
+
+    .review-flags-panel li {
+      margin-bottom: 4px;
+    }
+
+    .flag-pill {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 4px;
+      background: rgba(133, 82, 8, 0.12);
+      font-weight: 600;
+      font-size: 11px;
+      margin-right: 5px;
+    }
+
+    /* Developer Notes Box */
+    .developer-notes-card {
+      background: #f7f9f9;
+      border: 1px solid #d4deda;
+      border-left: 4px solid var(--green);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+
+    .notes-header {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notes-body {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    /* Content Cards (Learner Text) */
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 20px 0 10px;
+    }
+
+    .content-group {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .content-group-title {
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--line-subtle);
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .field-card {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-card:last-child {
+      border-bottom: 0;
+    }
+
+    .field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--ink-secondary);
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      min-width: 84px;
+      border-color: #d1dcda;
+    }
+
+    .copy-btn.copied {
+      background: #e2f2e9;
+      border-color: #9cd1b5;
+      color: #125e3f;
+    }
+
+    .field-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      user-select: text;
+    }
+
+    .field-text.heading-style {
+      font-family: 'Manrope', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    .field-text.empty-text {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    /* Assets Section */
+    .asset-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .asset-thumb-box {
+      width: 100px;
+      height: 75px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line-subtle);
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .asset-thumb-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .asset-placeholder-icon {
+      font-size: 26px;
+      color: #9bb0a4;
+    }
+
+    .asset-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .asset-filename {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+      margin-bottom: 4px;
+    }
+
+    .asset-status-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .asset-status-pill.attached {
+      background: #e5f3eb;
+      color: #1e6e4f;
+    }
+
+    .asset-status-pill.reference {
+      background: #f1f3f2;
+      color: var(--muted);
+    }
+
+    .asset-alt-text {
+      font-size: 12px;
+      color: var(--ink-secondary);
+      margin-top: 4px;
+    }
+
+    .asset-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Bottom Navigation Controls */
+    .bottom-nav {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Start / Welcome Screen (When no project or choosing flow) */
+    .start-screen {
+      max-width: 820px;
+      margin: 36px auto;
+      padding: 0 20px;
+    }
+
+    .start-hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .start-hero-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--green);
+      color: #ffffff;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 24px rgba(36, 113, 92, 0.25);
+    }
+
+    .start-hero h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .start-hero p {
+      font-size: 15px;
+      color: var(--ink-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .start-hero-import-card {
+      background: var(--surface);
+      border: 2px dashed var(--green-border);
+      border-radius: var(--radius-xl);
+      padding: 34px 32px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .start-hero-import-card.dragover {
+      border-color: var(--green);
+      background: var(--green-light);
+      box-shadow: var(--shadow-md);
+      transform: scale(1.01);
+    }
+
+    .start-step-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: var(--green);
+      background: var(--green-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .start-hero-import-card h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .start-hero-import-card p {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      max-width: 540px;
+      margin: 0 auto 22px;
+      line-height: 1.6;
+    }
+
+    .dropzone-action-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .btn-hero-lg {
+      padding: 13px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 14px rgba(36, 113, 92, 0.25);
+    }
+
+    .dropzone-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .start-features-row {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--line-subtle);
+      padding-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .start-secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .start-secondary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .start-secondary-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .secondary-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .start-secondary-card p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+      flex: 1;
+    }
+
+    /* Global Drag and drop overlay */
+    #global-drag-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(24, 71, 58, 0.94);
+      color: #ffffff;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    #global-drag-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drag-overlay-box {
+      border: 3px dashed rgba(255, 255, 255, 0.7);
+      border-radius: var(--radius-xl);
+      padding: 44px 64px;
+      max-width: 540px;
+    }
+
+    .drag-overlay-box h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      margin: 12px 0 6px;
+    }
+
+    .start-secondary-actions {
+      text-align: center;
+      padding-top: 10px;
+    }
+
+    /* Modals / Dialogs */
+    dialog {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      width: min(680px, 94vw);
+      max-height: 88vh;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow-lg);
+      margin: auto;
+    }
+
+    dialog::backdrop {
+      background: rgba(18, 34, 28, 0.45);
+      backdrop-filter: blur(2px);
+    }
+
+    dialog h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    dialog .dialog-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    label.field-heading {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input.form-control,
+    textarea.form-control,
+    select.form-control {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    textarea.form-control {
+      min-height: 85px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-subtle);
+    }
+
+    /* Word Import Preview Dialog Specifics */
+    dialog#word-preview {
+      width: min(840px, 95vw);
+    }
+
+    .preview-summary-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .preview-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .preview-records-list {
+      max-height: 38vh;
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+    }
+
+    .preview-record-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line-subtle);
+    }
+
+    .preview-record-item:last-child {
+      border-bottom: 0;
+    }
+
+    .preview-record-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .preview-record-check {
+      margin-top: 3px;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .preview-record-details {
+      margin-top: 6px;
+      margin-left: 24px;
+      font-size: 12px;
+      color: var(--ink-secondary);
+    }
+
+    .preview-record-details details {
+      margin-top: 6px;
+    }
+
+    .preview-record-details summary {
+      cursor: pointer;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 72px;
+      right: 24px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-msg {
+      background: #182822;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.2s ease forwards;
+      pointer-events: auto;
+      max-width: 360px;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Undo Bar */
+    #history-bar {
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-size: 12px;
+      z-index: 20;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    #history-bar[hidden] {
+      display: none;
+    }
+
+    /* Companion / Compact Mode (?compact=1) */
+    body.companion-mode {
+      background: var(--surface);
+      overflow-x: hidden;
+    }
+
+    body.companion-mode header.app-header {
+      padding: 0 14px;
+      height: 48px;
+    }
+
+    body.companion-mode .brand-company,
+    body.companion-mode .header-divider,
+    body.companion-mode .project-name-btn,
+    body.companion-mode .mode-toggle,
+    body.companion-mode .btn-companion-hide,
+    body.companion-mode #btn-primary-action,
+    body.companion-mode .block-actions-row {
+      display: none !important;
+    }
+
+    body.companion-mode .workspace-layout {
+      display: block !important;
+      grid-template-columns: 1fr;
+      min-height: auto;
+      max-width: 100%;
+    }
+
+    body.companion-mode aside.sidebar {
+      display: none !important;
+    }
+
+    body.companion-mode main.content-area {
+      padding: 10px 12px 40px !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    body.companion-mode .compact-block-bar {
+      display: flex;
+      max-width: 100%;
+      box-sizing: border-box;
+      gap: 6px;
+      padding: 6px 8px;
+    }
+
+    body.companion-mode .compact-block-select {
+      min-width: 0;
+      width: 100%;
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+
+    body.companion-mode .block-header-card {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      box-sizing: border-box;
+    }
+
+    body.companion-mode .block-heading {
+      font-size: 16px;
+    }
+
+    body.companion-mode .mode-action-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 10px 12px;
+    }
+
+    body.companion-mode .field-card {
+      padding: 10px 12px;
+      box-sizing: border-box;
+    }
+
+    body.companion-mode .field-text {
+      font-size: 13px;
+    }
+
+    body.companion-mode .asset-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      box-sizing: border-box;
+    }
+
+    body.companion-mode .bottom-nav {
+      margin-top: 20px;
+      padding-top: 14px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 860px) {
+      .workspace-layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside.sidebar {
+        display: none;
+      }
+
+      .compact-block-bar {
+        display: flex;
+      }
+
+      main.content-area {
+        padding: 20px 16px;
+      }
+
+      .start-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="#" class="brand" id="brand-link" title="Aptara Content Shelf">
+          <div class="brand-icon">▤</div>
+          <div class="brand-text">
+            <span class="brand-company">APTARA UTILITIES</span>
+            <span class="brand-title">Content Shelf</span>
+          </div>
+        </a>
+        <div class="header-divider"></div>
+        <button class="project-name-btn" id="project-rename-trigger" title="Click to rename project">
+          <span id="header-project-name">Untitled project</span> ✎
+        </button>
+        <div class="mode-toggle" role="group" aria-label="Workflow Mode">
+          <button class="mode-btn active" id="btn-mode-prepare"
+            title="Import storyboard, inspect, review and export handoff">
+            <span>Prepare content</span>
+            <span class="mode-badge" id="badge-prepare-count">0/0</span>
+          </button>
+          <button class="mode-btn" id="btn-mode-build"
+            title="Open handoff, copy fields beside Rise, and track inserted blocks">
+            <span>Build in Rise</span>
+            <span class="mode-badge" id="badge-build-count">0/0</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="save-indicator saved" id="save-status-indicator" role="status">
+          <span id="save-status-dot">●</span>
+          <span id="save-status-text">Saved in this browser</span>
+        </div>
+
+        <button class="btn-sm btn-companion-hide" id="btn-header-import-sb"
+          style="font-weight:700;color:var(--green);border-color:var(--green-border);background:var(--green-light);">
+          <span>📄 Import SB</span>
+        </button>
+
+        <button class="btn-primary" id="btn-primary-action">
+          <span id="primary-action-text">Export handoff</span>
+        </button>
+
+        <!-- Secondary Actions Menu -->
+        <div class="menu-container">
+          <button class="btn-quiet btn-companion-hide" id="btn-menu-toggle" aria-expanded="false" aria-haspopup="true"
+            title="Project and file options">
+            <span>Menu ▾</span>
+          </button>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <button class="menu-item" id="menu-word-import" role="menuitem">
+              <span>📄 Import Word storyboard…</span>
+            </button>
+            <button class="menu-item" id="menu-open-handoff" role="menuitem">
+              <span>📂 Open handoff file (.json)…</span>
+            </button>
+            <button class="menu-item" id="menu-save-backup" role="menuitem">
+              <span>💾 Save project backup (.json)</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button class="menu-item" id="menu-companion" role="menuitem">
+              <span>▣ Open companion window</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button class="menu-item" id="menu-new-project" role="menuitem">
+              <span>＋ New empty project</span>
+            </button>
+            <button class="menu-item" id="menu-load-sample" role="menuitem">
+              <span>✦ Try sample lesson</span>
+            </button>
+            <button class="menu-item" id="menu-rename-project" role="menuitem">
+              <span>✎ Rename project</span>
+            </button>
+            <div class="menu-divider"></div>
+            <a href="uat.html" target="_blank" rel="noopener" class="menu-item" style="text-decoration:none;">
+              <span>↗ UAT checklist & guide</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Drag and Drop Overlay -->
+  <div id="global-drag-overlay" role="region" aria-label="File dropzone">
+    <div class="drag-overlay-box">
+      <div style="font-size:48px;">📄</div>
+      <h2>Drop Storyboard to Import</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:8px;">
+        Release your Word storyboard (.docx) or handoff file (.json) to extract and inspect blocks instantly.
+      </p>
+    </div>
+  </div>
+
+  <!-- Sticky Alerts / Notices -->
+  <div id="save-alert" role="alert" hidden>
+    <span id="save-alert-text">Changes are not saved in this browser. Export a backup now to keep your work.</span>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-sm btn-primary" id="save-alert-export">Export backup</button>
+      <button class="btn-sm" id="save-alert-dismiss">Dismiss</button>
+    </div>
+  </div>
+
+  <div id="demo-banner" role="status" hidden>
+    <span>✦ <b>Sample Demo Project</b> — You are exploring demo content. Changes here will not affect your real
+      courses.</span>
+    <button class="btn-sm" id="btn-start-fresh">Start your own project</button>
+  </div>
+
+  <!-- Start Experience (shown when no active project exists) -->
+  <div id="start-screen-container" class="start-screen" hidden>
+    <div class="start-hero">
+      <div class="start-hero-icon">▤</div>
+      <h1>Aptara Content Shelf</h1>
+      <p>A companion for preparing storyboard content and transferring it into Articulate Rise without window switching.
+      </p>
+    </div>
+
+    <!-- Step 1: Import Storyboard (Prominent Hero Dropzone) -->
+    <div class="start-hero-import-card" id="dropzone-start">
+      <div class="start-step-badge">STEP 1 · FIRST STEP</div>
+      <h2>Import Word Storyboard</h2>
+      <p>Load your completed Articulate Rise Word storyboard to extract blocks, copyable text, developer notes, and
+        image attachments automatically.</p>
+
+      <div class="dropzone-action-area">
+        <button class="btn-primary btn-hero-lg" id="start-btn-word">
+          <span style="font-size:18px;">📄</span>
+          <span>Import Word storyboard (.docx)</span>
+        </button>
+        <span class="dropzone-hint">or drag & drop your .docx storyboard file here</span>
+      </div>
+
+      <div class="start-features-row">
+        <span>✓ Extracts text, options & notes</span>
+        <span>✓ Attaches embedded images</span>
+        <span>✓ 100% private in this browser</span>
+      </div>
+    </div>
+
+    <!-- Alternative Options (Developer Handoff, Sample, Empty) -->
+    <div class="start-secondary-grid">
+      <div class="start-secondary-card">
+        <div>
+          <div class="secondary-title">Rise Developer Handoff</div>
+          <p>Already have an exported handoff file (.json) from an instructional designer?</p>
+        </div>
+        <button class="btn-quiet" id="start-btn-handoff" style="border:1px solid var(--line);width:100%;">📂 Open
+          handoff file</button>
+      </div>
+
+      <div class="start-secondary-card">
+        <div>
+          <div class="secondary-title">Explore Sample Project</div>
+          <p>Explore a pre-loaded lesson to see how blocks, copying, and companion mode work.</p>
+        </div>
+        <button class="btn-quiet" id="start-btn-sample" style="border:1px solid var(--line);width:100%;">✦ Try sample
+          lesson</button>
+      </div>
+
+      <div class="start-secondary-card">
+        <div>
+          <div class="secondary-title">Build Manually</div>
+          <p>Create a block from scratch and type or paste content manually.</p>
+        </div>
+        <button class="btn-quiet" id="start-btn-manual" style="border:1px solid var(--line);width:100%;">＋ Add block
+          manually</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Workspace Layout (Sidebar + Content) -->
+  <div class="workspace-layout" id="workspace-container">
+
+    <!-- Block Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="progress-box">
+          <div class="progress-header">
+            <span id="sidebar-progress-label">Reviewed Progress</span>
+            <span id="sidebar-progress-percent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="sidebar-progress-fill" style="width:0%;"></div>
+          </div>
+        </div>
+
+        <button class="btn-sm" id="btn-sidebar-import-sb"
+          style="width:100%;margin-bottom:10px;color:var(--green);border-color:var(--green-border);background:var(--green-light);font-weight:700;">
+          <span>📄 Import Word Storyboard</span>
+        </button>
+
+        <div class="search-box">
+          <input type="text" class="search-input" id="search-input" placeholder="Search blocks or content…"
+            aria-label="Search blocks">
+          <button class="search-clear" id="search-clear-btn" title="Clear search">✕</button>
+        </div>
+      </div>
+
+      <div class="block-list" id="block-list-nav" role="navigation" aria-label="Block list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-quiet" id="btn-add-block" style="border:1px dashed var(--line);">
+          <span>＋ Add block</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Content Workspace -->
+    <main class="content-area" id="main-content-area">
+      <!-- Mobile / Compact Block Selector -->
+      <div class="compact-block-bar">
+        <button class="btn-sm" id="compact-prev" title="Previous block">←</button>
+        <select class="compact-block-select" id="compact-block-select" aria-label="Select block">
+          <!-- Dynamically populated -->
+        </select>
+        <button class="btn-sm" id="compact-next" title="Next block">→</button>
+      </div>
+
+      <div id="block-content-view">
+        <!-- Current block rendered dynamically -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- History / Undo Bar -->
+  <div id="history-bar" hidden>
+    <span>Last change can be undone.</span>
+    <button class="btn-sm" id="btn-undo">Undo last change</button>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Hidden File Inputs -->
+  <input type="file" id="word-file-input"
+    accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+  <input type="file" id="handoff-file-input" accept="application/json,.json" hidden>
+
+  <!-- Block Editor Dialog -->
+  <dialog id="editor-dialog" aria-labelledby="editor-dialog-title">
+    <h2 id="editor-dialog-title">Edit block</h2>
+    <p class="dialog-sub">Update content pieces, developer notes, or asset references for this block.</p>
+    <form id="editor-form">
+      <div id="editor-conflict-box"></div>
+
+      <label class="field-heading" for="edit-block-title">Block title</label>
+      <input type="text" class="form-control" id="edit-block-title" required maxlength="150"
+        placeholder="e.g. Welcome & Objectives">
+
+      <label class="field-heading" for="edit-block-type">Block type</label>
+      <select class="form-control" id="edit-block-type">
+        <option>Text</option>
+        <option>Image & Text</option>
+        <option>Accordion</option>
+        <option>Tabs</option>
+        <option>Knowledge Check</option>
+        <option>Custom</option>
+      </select>
+
+      <label class="field-heading" for="edit-block-notes">Developer setup notes (optional)</label>
+      <textarea class="form-control" id="edit-block-notes" maxlength="20000"
+        placeholder="Instructions for Rise block settings, layouts, or interactions…"></textarea>
+
+      <label class="field-heading">Copyable learner content</label>
+      <div id="editor-parts-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px;">
+        <!-- Parts rendered dynamically -->
+      </div>
+      <button type="button" class="btn-sm" id="btn-add-part">＋ Add content piece</button>
+
+      <label class="field-heading" for="edit-asset-name">Asset filename or reference (optional)</label>
+      <input type="text" class="form-control" id="edit-asset-name" maxlength="500" placeholder="e.g. M01_B02_Hero.png">
+
+      <label class="field-heading" for="edit-asset-file">Attach image (optional, PNG/JPEG/WebP/GIF up to 2 MB)</label>
+      <input type="file" class="form-control" id="edit-asset-file" accept="image/png,image/jpeg,image/webp,image/gif">
+      <div id="edit-asset-status" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+      <button type="button" class="btn-sm btn-danger" id="btn-remove-asset" style="margin-top:6px;">Remove attached
+        image</button>
+
+      <div id="editor-imported-assets-list" style="margin-top:16px;"></div>
+
+      <div class="dialog-footer">
+        <button type="button" id="btn-cancel-editor">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-save-editor">Save block</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Word Import Preview Dialog -->
+  <dialog id="word-preview-dialog" aria-labelledby="word-preview-title">
+    <h2 id="word-preview-title">Review Word storyboard extraction</h2>
+    <p class="dialog-sub" id="word-preview-sub">Processed in this browser. Check extracted blocks and choose which to
+      import.</p>
+
+    <div class="preview-summary-box" id="word-preview-summary">
+      <!-- Summary metrics rendered dynamically -->
+    </div>
+
+    <div id="word-preview-messages"></div>
+
+    <label class="field-heading" for="word-project-name">Project / lesson name</label>
+    <input type="text" class="form-control" id="word-project-name" maxlength="150" style="margin-bottom:14px;">
+
+    <div class="preview-filter-bar">
+      <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="check-show-unfilled" style="accent-color:var(--green);">
+        <span>Show unfilled template records</span>
+      </label>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn-sm" id="btn-select-populated">Select populated</button>
+        <button type="button" class="btn-sm" id="btn-select-none">Select none</button>
+      </div>
+    </div>
+
+    <div class="preview-records-list" id="word-records-container">
+      <!-- Records rendered dynamically -->
+    </div>
+
+    <label class="field-heading" for="word-import-destination">Where should these blocks go?</label>
+    <select class="form-control" id="word-import-destination" style="margin-bottom:12px;">
+      <option value="replace">Replace the current shelf (clean start)</option>
+      <option value="append">Add to the current shelf (keep existing blocks)</option>
+    </select>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">
+      Replace confirmation will ask before clearing your existing shelf. Appending preserves existing content.
+    </p>
+
+    <div class="dialog-footer">
+      <button type="button" id="btn-cancel-word-preview">Cancel</button>
+      <button type="button" class="btn-primary" id="btn-apply-word-import">Import selected blocks</button>
+    </div>
+  </dialog>
+
+  <!-- Project Rename Dialog -->
+  <dialog id="rename-dialog" aria-labelledby="rename-dialog-title">
+    <h2 id="rename-dialog-title">Rename project</h2>
+    <form id="rename-form">
+      <label class="field-heading" for="rename-input">Project name</label>
+      <input type="text" class="form-control" id="rename-input" required maxlength="150"
+        placeholder="e.g. Cybersecurity Fundamentals · Module 1">
+      <div class="dialog-footer">
+        <button type="button" id="btn-cancel-rename">Cancel</button>
+        <button type="submit" class="btn-primary">Save name</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- External JS Dependencies -->
+  <script src="vendor/jszip.min.js"></script>
+  <script src="word-import.js"></script>
+
+  <script>
+    /* Content Shelf Application Logic */
+    (function() {
+      'use strict';
+
+      const STORAGE_KEY = 'aptara-content-shelf-v1';
+      const ROLE_KEY = 'content-shelf-role';
+      const $ = s => document.querySelector(s);
+      const $$ = s => document.querySelectorAll(s);
+      const uuid = () => crypto.randomUUID ? crypto.randomUUID() : 'b-' + Math.random().toString(36).substring(2, 9);
+      const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+      // Sample Demo Project
+      const createSampleProject = () => ({
+        version: 1,
+        name: 'Internal Controls · Lesson 01',
+        isSample: true,
+        blocks: [
+          {
+            id: uuid(),
+            sourceId: 'S01-B01',
+            title: 'Welcome & introduction',
+            type: 'Text',
+            notes: 'Use a heading block followed by a paragraph. Copy each piece into its matching field in Rise.',
+            done: false,
+            reviewed: false,
+            parts: [
+              { label: 'Heading', text: 'Internal controls start with everyday decisions' },
+              { label: 'Body text', text: 'Strong internal controls help protect information, support reliable reporting, and keep work moving with confidence. In this lesson, explore how small actions contribute to a stronger control environment.' }
+            ]
+          },
+          {
+            id: uuid(),
+            sourceId: 'S01-B02',
+            title: 'Why controls matter',
+            type: 'Image & Text',
+            notes: 'Place the approved image beside the text. Confirm the asset with the project team.',
+            assetName: 'M01_B02_Control_Environment.png',
+            done: false,
+            reviewed: false,
+            parts: [
+              { label: 'Heading', text: 'A shared responsibility' },
+              { label: 'Body text', text: 'Internal controls are part of everyone’s role. Following an approval process, checking the accuracy of a record, and raising a concern all help protect the organization.' },
+              { label: 'Image alt text', text: 'Colleagues reviewing a process checklist together.' }
+            ]
+          },
+          {
+            id: uuid(),
+            sourceId: 'S01-B03',
+            title: 'Three everyday actions',
+            type: 'Accordion',
+            notes: 'Create three accordion items. Paste each title and body separately.',
+            done: false,
+            reviewed: false,
+            parts: [
+              { label: 'Item 1 · Title', text: 'Follow the process' },
+              { label: 'Item 1 · Body', text: 'Use the documented steps and obtain the required approvals before moving forward.' },
+              { label: 'Item 2 · Title', text: 'Keep a clear record' },
+              { label: 'Item 2 · Body', text: 'Document decisions and maintain accurate records so others can understand what happened.' },
+              { label: 'Item 3 · Title', text: 'Speak up early' },
+              { label: 'Item 3 · Body', text: 'Raise questions when something looks unusual or a process is unclear.' }
+            ]
+          },
+          {
+            id: uuid(),
+            sourceId: 'S01-B04',
+            title: 'Check your understanding',
+            type: 'Knowledge Check',
+            notes: 'Use a multiple-choice knowledge check. Option B is correct.',
+            done: false,
+            reviewed: false,
+            parts: [
+              { label: 'Question', text: 'A colleague asks you to skip a required approval to meet a deadline. What should you do?' },
+              { label: 'Option A', text: 'Skip the approval and document it later.' },
+              { label: 'Option B · Correct', text: 'Follow the approval process and discuss the timing concern.' },
+              { label: 'Correct feedback', text: 'Correct. Required approvals remain part of the process. Raise the timing concern so the team can find an appropriate way forward.' },
+              { label: 'Incorrect feedback', text: 'Try again. A deadline does not remove the need for a required approval.' }
+            ]
+          },
+          {
+            id: uuid(),
+            sourceId: 'S01-B05',
+            title: 'Summary & next steps',
+            type: 'Text',
+            notes: 'End with a short takeaway in Rise.',
+            done: false,
+            reviewed: false,
+            parts: [
+              { label: 'Heading', text: 'Small actions. Stronger controls.' },
+              { label: 'Body text', text: 'Follow the process, keep accurate records, and speak up early. Apply these three actions in your everyday work.' }
+            ]
+          }
+        ]
+      });
+
+      // State
+      let project = null;
+      let selectedId = null;
+      let workflowMode = 'prepare'; // 'prepare' or 'build'
+      let undoStack = null;
+      let isCompanion = new URLSearchParams(location.search).has('compact');
+      let isUnsaved = false;
+      let editorBaseline = null;
+      let editorExternalChange = false;
+      let editingBlockId = null;
+      let editingParts = [];
+      let editingAssets = [];
+      let editingAssetData = '';
+      let assetFileLoading = false;
+      let wordDraft = null;
+      let wordChoices = new Set();
+      let wordLoading = false;
+
+      // Schema Validator
+      function validateProject(p) {
+        const str = (v, max) => typeof v === 'string' && v.length <= max;
+        return !!(
+          p &&
+          p.version === 1 &&
+          str(p.name, 150) &&
+          p.name.trim() &&
+          Array.isArray(p.blocks) &&
+          p.blocks.length <= 500 &&
+          new Set(p.blocks.map(b => b?.id)).size === p.blocks.length &&
+          p.blocks.every(b =>
+            b &&
+            str(b.id, 100) &&
+            b.id &&
+            str(b.title, 150) &&
+            b.title.trim() &&
+            str(b.type, 80) &&
+            (!('notes' in b) || str(b.notes, 20000)) &&
+            (!('assetName' in b) || str(b.assetName, 500)) &&
+            (!('done' in b) || typeof b.done === 'boolean') &&
+            (!('reviewed' in b) || typeof b.reviewed === 'boolean') &&
+            ['sourceId', 'sourceSection', 'sourceFile'].every(k => !(k in b) || str(b[k], 500)) &&
+            ['missingFields', 'importWarnings'].every(k => !(k in b) || (Array.isArray(b[k]) && b[k].length <= 200 && b[k].every(x => str(x, 1000)))) &&
+            (!('assets' in b) || (Array.isArray(b.assets) && b.assets.length <= 20 && b.assets.every(a =>
+              a && str(a.name, 500) &&
+              (!a.field || str(a.field, 150)) &&
+              (!a.alt || str(a.alt, 20000)) &&
+              (!a.data || (str(a.data, 2800000) && /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(a.data)))
+            ))) &&
+            Array.isArray(b.parts) &&
+            b.parts.length <= 100 &&
+            b.parts.every(x => x && str(x.label, 150) && x.label.trim() && str(x.text, 200000)) &&
+            (!b.assetData || (typeof b.assetData === 'string' && b.assetData.length <= 2800000 && /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(b.assetData)))
+          )
+        );
+      }
+
+      // Notification Toast
+      function showToast(msg, isError = false) {
+        const container = $('#toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        if (isError) toast.style.background = '#8a2115';
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 3200);
+      }
+
+      // Storage & Persistence
+      function saveToStorage() {
+        if (!project) return;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(project));
+          isUnsaved = false;
+          $('#save-status-indicator').className = 'save-indicator saved';
+          $('#save-status-text').textContent = 'Saved in this browser';
+          $('#save-alert').hidden = true;
+        } catch (e) {
+          isUnsaved = true;
+          $('#save-status-indicator').className = 'save-indicator warning';
+          $('#save-status-text').textContent = 'Unsaved changes';
+          $('#save-alert').hidden = false;
+          showToast('Could not save in browser storage. Export a backup to preserve work.', true);
+        }
+      }
+
+      function rememberUndo() {
+        undoStack = {
+          project: structuredClone(project),
+          selectedId
+        };
+        $('#history-bar').hidden = false;
+      }
+
+      function clearUndo() {
+        undoStack = null;
+        $('#history-bar').hidden = true;
+      }
+
+      // Download helper
+      function triggerDownload(content, filename, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      // Clipboard copy helper
+      async function copyText(text, buttonEl) {
+        try {
+          if (!text) return;
+          await navigator.clipboard.writeText(text);
+          if (buttonEl) {
+            const originalText = buttonEl.textContent;
+            buttonEl.classList.add('copied');
+            buttonEl.textContent = '✓ Copied';
+            setTimeout(() => {
+              if (buttonEl.isConnected) {
+                buttonEl.classList.remove('copied');
+                buttonEl.textContent = originalText;
+              }
+            }, 1500);
+          }
+          showToast('Copied to clipboard');
+        } catch (err) {
+          showToast('Clipboard unavailable. Select text manually.', true);
+        }
+      }
+
+      // Mode switching
+      function setWorkflowMode(mode) {
+        workflowMode = mode;
+        try {
+          localStorage.setItem(ROLE_KEY, mode === 'prepare' ? 'id' : 'dev');
+        } catch {}
+        updateModeUI();
+        renderWorkspace();
+      }
+
+      function updateModeUI() {
+        const isPrep = workflowMode === 'prepare';
+        $('#btn-mode-prepare').classList.toggle('active', isPrep);
+        $('#btn-mode-build').classList.toggle('active', !isPrep);
+        
+        // Context primary action button and import step button
+        const headerImportBtn = $('#btn-header-import-sb');
+        if (isPrep) {
+          $('#primary-action-text').textContent = 'Export handoff';
+          $('#btn-primary-action').title = 'Export reviewed handoff file (.json) for Rise developer';
+          if (headerImportBtn) {
+            headerImportBtn.innerHTML = '<span>📄 Import SB</span>';
+            headerImportBtn.title = 'Import a completed Rise Word storyboard (.docx)';
+          }
+        } else {
+          $('#primary-action-text').textContent = '▣ Open companion';
+          $('#btn-primary-action').title = 'Launch compact companion window beside Rise';
+          if (headerImportBtn) {
+            headerImportBtn.innerHTML = '<span>📂 Open handoff</span>';
+            headerImportBtn.title = 'Open a developer handoff file (.json)';
+          }
+        }
+      }
+
+      // Main Render
+      function render() {
+        const hasBlocks = project && Array.isArray(project.blocks) && project.blocks.length > 0;
+
+        if (!hasBlocks) {
+          // Show Start Experience when there is no project or when project has 0 blocks
+          $('#start-screen-container').hidden = false;
+          $('#workspace-container').hidden = true;
+          $('#demo-banner').hidden = true;
+          $('#header-project-name').textContent = project?.name && project.name !== 'Untitled project' ? project.name : 'No active project';
+          $('#badge-prepare-count').textContent = '0/0';
+          $('#badge-build-count').textContent = '0/0';
+          return;
+        }
+
+        // Show Workspace
+        $('#start-screen-container').hidden = true;
+        $('#workspace-container').hidden = false;
+        $('#demo-banner').hidden = !project.isSample;
+
+        // Ensure selected block is valid
+        if (!project.blocks.some(b => b.id === selectedId)) {
+          selectedId = project.blocks[0]?.id || null;
+        }
+
+        // Header Project Name
+        $('#header-project-name').textContent = project.name || 'Untitled project';
+        document.title = (project.name ? project.name + ' · ' : '') + 'Aptara Content Shelf';
+
+        // Progress Counts
+        const total = project.blocks.length;
+        const reviewedCount = project.blocks.filter(b => b.reviewed).length;
+        const insertedCount = project.blocks.filter(b => b.done).length;
+
+        $('#badge-prepare-count').textContent = `${reviewedCount}/${total}`;
+        $('#badge-build-count').textContent = `${insertedCount}/${total}`;
+
+        const isPrep = workflowMode === 'prepare';
+        const activeCount = isPrep ? reviewedCount : insertedCount;
+        const activePct = total ? Math.round((activeCount / total) * 100) : 0;
+
+        $('#sidebar-progress-label').textContent = isPrep ? `Reviewed (${activeCount}/${total})` : `Inserted (${activeCount}/${total})`;
+        $('#sidebar-progress-percent').textContent = `${activePct}%`;
+        $('#sidebar-progress-fill').style.width = `${activePct}%`;
+
+        // Render Block List (Sidebar)
+        renderSidebarList();
+
+        // Render Current Block
+        renderCurrentBlock();
+      }
+
+      function renderSidebarList() {
+        const query = ($('#search-input').value || '').trim().toLowerCase();
+        const container = $('#block-list-nav');
+        const compactSelect = $('#compact-block-select');
+
+        const filtered = project.blocks.map((b, idx) => ({ b, idx })).filter(({ b }) => {
+          if (!query) return true;
+          const searchStr = `${b.sourceId || ''} ${b.title} ${b.type} ${b.notes || ''} ${b.parts.map(p => p.text).join(' ')}`.toLowerCase();
+          return searchStr.includes(query);
+        });
+
+        // Compact select options
+        compactSelect.innerHTML = project.blocks.map((b, idx) => {
+          const statusMark = (workflowMode === 'prepare' ? b.reviewed : b.done) ? '✓ ' : '';
+          const label = `${statusMark}${b.sourceId ? b.sourceId + ' · ' : ''}${b.title}`;
+          return `<option value="${esc(b.id)}" ${b.id === selectedId ? 'selected' : ''}>${esc(label)}</option>`;
+        }).join('');
+
+        if (!filtered.length) {
+          container.innerHTML = `<div style="padding:28px 12px;text-align:center;color:var(--muted);font-size:13px;">No matching blocks found</div>`;
+          return;
+        }
+
+        const isPrep = workflowMode === 'prepare';
+        container.innerHTML = filtered.map(({ b, idx }) => {
+          const isSelected = b.id === selectedId;
+          const isComplete = isPrep ? b.reviewed : b.done;
+          const hasFlags = (b.missingFields && b.missingFields.length > 0) || 
+                           (b.importWarnings && b.importWarnings.length > 0) ||
+                           b.parts.some(p => !p.text.trim());
+
+          return `
+            <button class="nav-block-btn ${isSelected ? 'active' : ''}" data-block-id="${esc(b.id)}" ${isSelected ? 'aria-current="true"' : ''}>
+              <div class="nav-status-indicator ${isComplete ? 'complete' : ''}" title="${isComplete ? (isPrep ? 'Reviewed' : 'Inserted') : (isPrep ? 'Unreviewed' : 'Not inserted')}">
+                ${isComplete ? '✓' : String(idx + 1).padStart(2, '0')}
+              </div>
+              <div class="nav-block-content">
+                <div class="nav-block-row">
+                  ${b.sourceId ? `<span class="nav-source-id">${esc(b.sourceId)}</span>` : ''}
+                  <span class="nav-block-type" title="${esc(b.type)}">${esc(b.type)}</span>
+                </div>
+                <div class="nav-block-title" title="${esc(b.title)}">${esc(b.title)}</div>
+              </div>
+              ${hasFlags && isPrep ? `<span class="nav-warning-dot" title="Has review flags or unfilled fields"></span>` : ''}
+            </button>
+          `;
+        }).join('');
+      }
+
+      function renderCurrentBlock() {
+        const view = $('#block-content-view');
+        const b = project.blocks.find(x => x.id === selectedId);
+
+        if (!b) {
+          view.innerHTML = `
+            <div style="padding:60px 20px;text-align:center;color:var(--muted);">
+              <h2>No blocks in this shelf</h2>
+              <p style="margin:10px 0 20px;">Add your first block or import a storyboard to get started.</p>
+              <button class="btn-primary" id="btn-empty-add">＋ Add block</button>
+            </div>
+          `;
+          return;
+        }
+
+        const idx = project.blocks.indexOf(b);
+        const total = project.blocks.length;
+        const isPrep = workflowMode === 'prepare';
+
+        // Review Flags Calculation
+        const emptyFields = b.parts.filter(p => !p.text.trim()).map(p => p.label);
+        const missingAtImport = b.missingFields || [];
+        const importNotes = b.importWarnings || [];
+        const hasFlags = emptyFields.length > 0 || missingAtImport.length > 0 || importNotes.length > 0;
+
+        // Group fields if interaction
+        const interactionGroups = groupInteractionParts(b.type, b.parts);
+
+        view.innerHTML = `
+          <!-- Block Header Card -->
+          <div class="block-header-card">
+            <div class="block-meta-row">
+              <div class="block-badges">
+                ${b.sourceId ? `<span class="badge-source">${esc(b.sourceId)}</span>` : ''}
+                <span class="badge-type">${esc(b.type)}</span>
+                <span class="badge-review-state ${b.reviewed ? 'reviewed' : ''}">
+                  ${b.reviewed ? 'Reviewed for handoff' : 'Not marked reviewed'}
+                </span>
+                ${b.done ? `<span class="badge-review-state reviewed">Inserted in Rise</span>` : ''}
+              </div>
+              <div class="block-actions-row">
+                <button class="btn-sm btn-quiet" id="btn-move-up" ${idx === 0 ? 'disabled' : ''} title="Move block up">↑ Move up</button>
+                <button class="btn-sm btn-quiet" id="btn-move-down" ${idx === total - 1 ? 'disabled' : ''} title="Move block down">↓ Move down</button>
+                <button class="btn-sm btn-quiet" id="btn-duplicate-block" title="Duplicate this block">⧉ Duplicate</button>
+                <button class="btn-sm" id="btn-edit-block" title="Edit block content and settings">✎ Edit block</button>
+                <button class="btn-sm btn-quiet btn-danger" id="btn-delete-block" title="Delete block" aria-label="Delete block">✕</button>
+              </div>
+            </div>
+
+            <div class="block-title-row">
+              <h1 class="block-heading">${esc(b.title)}</h1>
+            </div>
+
+            <!-- Mode Action Checkbox Bar -->
+            <div class="mode-action-bar">
+              <label class="mode-action-label">
+                <input type="checkbox" id="check-block-action" ${isPrep ? (b.reviewed ? 'checked' : '') : (b.done ? 'checked' : '')}>
+                <span>${isPrep ? 'Mark content reviewed for handoff' : 'Mark block inserted in Rise'}</span>
+              </label>
+              <span class="mode-action-hint">
+                ${isPrep ? 'Reviewed acknowledges content check; it does not certified instructional correctness.' : 'Tracks your build progress; does not automatically insert into Rise.'}
+              </span>
+            </div>
+          </div>
+
+          <!-- Review Flags Box -->
+          ${hasFlags ? `
+            <details class="review-flags-panel" ${isPrep ? 'open' : ''}>
+              <summary>
+                <span>⚠ Review flags · ${emptyFields.length ? emptyFields.length + ' unfilled field(s)' : ''} ${importNotes.length ? ' · ' + importNotes.length + ' import note(s)' : ''}</span>
+              </summary>
+              <div style="margin-top:8px;">
+                ${emptyFields.length ? `<p><b>Currently empty fields:</b> ${emptyFields.map(f => `<span class="flag-pill">${esc(f)}</span>`).join('')}</p>` : ''}
+                ${missingAtImport.length ? `<p style="margin-top:4px;"><b>Unfilled in Word storyboard at import:</b> ${missingAtImport.map(f => `<span class="flag-pill">${esc(f)}</span>`).join('')}</p>` : ''}
+                ${importNotes.length ? `<ul style="margin-top:6px;">${importNotes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+              </div>
+            </details>
+          ` : ''}
+
+          <!-- Developer Setup Notes (Distinct Visual Treatment) -->
+          ${b.notes ? `
+            <div class="developer-notes-card">
+              <div class="notes-header">
+                <span>⚙ Developer Setup Notes</span>
+              </div>
+              <div class="notes-body">${esc(b.notes)}</div>
+            </div>
+          ` : ''}
+
+          <!-- Learner Content Section -->
+          <div class="section-title">Learner Content (Click Copy to transfer)</div>
+          ${interactionGroups.map(group => `
+            <div class="content-group">
+              ${group.title ? `<div class="content-group-title">${esc(group.title)}</div>` : ''}
+              ${group.parts.map(p => `
+                <div class="field-card">
+                  <div class="field-header">
+                    <span class="field-label">${esc(p.label)}</span>
+                    <button class="copy-btn" data-copy-text="${esc(p.text)}" ${!p.text.trim() ? 'disabled' : ''} title="${p.text.trim() ? 'Copy this text' : 'Field is empty'}">
+                      ⧉ Copy
+                    </button>
+                  </div>
+                  <div class="field-text ${/heading|title/i.test(p.label) ? 'heading-style' : ''} ${!p.text.trim() ? 'empty-text' : ''}">
+                    ${esc(p.text) || 'Empty in storyboard — add approved text or leave blank if optional.'}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+
+          <!-- Assets Section (Attached vs Filename Only) -->
+          ${renderAssetsSection(b)}
+
+          <!-- Bottom Navigation Controls -->
+          <div class="bottom-nav">
+            <button class="btn-sm" id="btn-prev-block" ${idx === 0 ? 'disabled' : ''}>← Previous block</button>
+            <div style="font-size:12px;color:var(--muted);">Block ${idx + 1} of ${total}</div>
+            <button class="btn-sm btn-primary" id="btn-next-block" ${idx === total - 1 ? 'disabled' : ''}>Next block →</button>
+          </div>
+        `;
+      }
+
+      // Group interaction parts visually
+      function groupInteractionParts(type, parts) {
+        if (!parts || !parts.length) return [];
+        const lowerType = (type || '').toLowerCase();
+
+        // Accordion or Tabs: group by item number
+        if (lowerType.includes('accordion') || lowerType.includes('tab')) {
+          const groups = [];
+          const itemMap = new Map();
+          const generalParts = [];
+
+          for (const p of parts) {
+            const m = p.label.match(/^(?:Item|Tab|Panel|Card)\s*(\d+)[\s·:-]*(.*)$/i);
+            if (m) {
+              const num = m[1];
+              if (!itemMap.has(num)) itemMap.set(num, []);
+              itemMap.get(num).push(p);
+            } else {
+              generalParts.push(p);
+            }
+          }
+
+          if (generalParts.length) {
+            groups.push({ title: 'Overview / Intro', parts: generalParts });
+          }
+          for (const [num, gParts] of itemMap.entries()) {
+            groups.push({ title: `Item ${num}`, parts: gParts });
+          }
+          return groups.length ? groups : [{ title: '', parts }];
+        }
+
+        // Knowledge Check: group question, options, feedback
+        if (lowerType.includes('knowledge') || lowerType.includes('quiz') || lowerType.includes('check')) {
+          const qParts = [];
+          const optParts = [];
+          const fbParts = [];
+          const other = [];
+
+          for (const p of parts) {
+            if (/^question/i.test(p.label)) qParts.push(p);
+            else if (/^option|^choice/i.test(p.label)) optParts.push(p);
+            else if (/feedback/i.test(p.label)) fbParts.push(p);
+            else other.push(p);
+          }
+
+          const groups = [];
+          if (qParts.length) groups.push({ title: 'Question', parts: qParts });
+          if (optParts.length) groups.push({ title: 'Options', parts: optParts });
+          if (fbParts.length) groups.push({ title: 'Feedback', parts: fbParts });
+          if (other.length) groups.push({ title: 'Additional Content', parts: other });
+          return groups.length ? groups : [{ title: '', parts }];
+        }
+
+        // Default: single group
+        return [{ title: '', parts }];
+      }
+
+      function renderAssetsSection(b) {
+        const assets = [];
+        if (b.assetName || b.assetData) {
+          assets.push({
+            name: b.assetName || 'Attached image',
+            data: b.assetData || '',
+            alt: '',
+            field: 'PRIMARY ASSET'
+          });
+        }
+        if (Array.isArray(b.assets)) {
+          for (const a of b.assets) {
+            if (!assets.some(x => x.name === a.name && x.data === a.data)) {
+              assets.push(a);
+            }
+          }
+        }
+
+        if (!assets.length) return '';
+
+        return `
+          <div class="section-title">Associated Assets</div>
+          ${assets.map((a, i) => {
+            const isAttached = !!a.data;
+            return `
+              <div class="asset-card">
+                <div class="asset-thumb-box">
+                  ${isAttached ? `<img src="${a.data}" class="asset-thumb-img" alt="${esc(a.alt || 'Asset thumbnail')}">` : `<div class="asset-placeholder-icon">▤</div>`}
+                </div>
+                <div class="asset-details">
+                  <div class="asset-filename">${esc(a.name || 'Unnamed asset')}</div>
+                  <span class="asset-status-pill ${isAttached ? 'attached' : 'reference'}">
+                    ${isAttached ? '✓ Image attached in handoff' : '⚠ Filename reference only (no image attached)'}
+                  ${a.alt ? `<div class="asset-alt-text"><b>Alt text:</b> ${esc(a.alt)}</div>` : ''}
+                  <div class="asset-actions">
+                    ${a.name ? `<button class="btn-sm copy-btn" data-copy-text="${esc(a.name)}">⧉ Copy filename</button>` : ''}
+                    ${a.alt ? `<button class="btn-sm copy-btn" data-copy-text="${esc(a.alt)}">⧉ Copy alt text</button>` : ''}
+                    ${isAttached ? `<button class="btn-sm" data-download-asset="${i}">↓ Download image</button>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        `;
+      }
+
+      function renderWorkspace() {
+        render();
+      }
+
+      // Event Delegation
+      document.addEventListener('click', e => {
+        // Dropdown toggle
+        const menuToggle = e.target.closest('#btn-menu-toggle');
+        const dropdownMenu = $('#dropdown-menu');
+        if (menuToggle) {
+          dropdownMenu.classList.toggle('show');
+          menuToggle.setAttribute('aria-expanded', String(dropdownMenu.classList.contains('show')));
+          return;
+        } else if (!e.target.closest('.menu-container')) {
+          dropdownMenu.classList.remove('show');
+          $('#btn-menu-toggle')?.setAttribute('aria-expanded', 'false');
+        }
+
+        // Copy button
+        const copyBtn = e.target.closest('[data-copy-text]');
+        if (copyBtn) {
+          copyText(copyBtn.dataset.copyText, copyBtn);
+          return;
+        }
+
+        // Block navigation selection
+        const navItem = e.target.closest('[data-block-id]');
+        if (navItem) {
+          selectedId = navItem.dataset.blockId;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        // Primary action
+        if (e.target.closest('#btn-primary-action')) {
+          if (workflowMode === 'prepare') {
+            exportHandoff();
+          } else {
+            launchCompanion();
+          }
+          return;
+        }
+
+        // Block reordering and tools
+        if (e.target.id === 'btn-move-up') moveBlock(-1);
+        if (e.target.id === 'btn-move-down') moveBlock(1);
+        if (e.target.id === 'btn-duplicate-block') duplicateBlock();
+        if (e.target.id === 'btn-delete-block') deleteBlock();
+        if (e.target.id === 'btn-edit-block') openEditor();
+        if (e.target.id === 'btn-prev-block' || e.target.id === 'compact-prev') stepBlock(-1);
+        if (e.target.id === 'btn-next-block' || e.target.id === 'compact-next') stepBlock(1);
+        if (e.target.id === 'btn-empty-add' || e.target.id === 'btn-add-block') addNewBlock();
+
+        // Download asset
+        const dlBtn = e.target.closest('[data-download-asset]');
+        if (dlBtn) {
+          downloadCurrentAsset(Number(dlBtn.dataset.downloadAsset));
+          return;
+        }
+
+        // Evident Import SB button in header
+        if (e.target.closest('#btn-header-import-sb')) {
+          if (workflowMode === 'prepare') {
+            $('#word-file-input').click();
+          } else {
+            $('#handoff-file-input').click();
+          }
+          return;
+        }
+
+        // Sidebar import storyboard button
+        if (e.target.closest('#btn-sidebar-import-sb')) {
+          $('#word-file-input').click();
+          return;
+        }
+
+        // Menu items
+        if (e.target.closest('#menu-word-import') || e.target.closest('#start-btn-word')) {
+          dropdownMenu.classList.remove('show');
+          $('#word-file-input').click();
+        }
+        if (e.target.closest('#menu-open-handoff') || e.target.closest('#start-btn-handoff')) {
+          dropdownMenu.classList.remove('show');
+          $('#handoff-file-input').click();
+        }
+        if (e.target.closest('#menu-save-backup')) {
+          dropdownMenu.classList.remove('show');
+          exportHandoff(true);
+        }
+        if (e.target.closest('#menu-companion')) {
+          dropdownMenu.classList.remove('show');
+          launchCompanion();
+        }
+        if (e.target.closest('#menu-new-project') || e.target.closest('#btn-start-fresh')) {
+          dropdownMenu.classList.remove('show');
+          startNewProject();
+        }
+        if (e.target.closest('#menu-load-sample') || e.target.closest('#start-btn-sample')) {
+          dropdownMenu.classList.remove('show');
+          loadSampleLesson();
+        }
+        if (e.target.closest('#menu-rename-project') || e.target.closest('#project-rename-trigger')) {
+          dropdownMenu.classList.remove('show');
+          openRenameDialog();
+        }
+
+        // Save alert dismiss & export
+        if (e.target.id === 'save-alert-export') exportHandoff(true);
+        if (e.target.id === 'save-alert-dismiss') $('#save-alert').hidden = true;
+
+        // Undo
+        if (e.target.id === 'btn-undo') undoLastChange();
+      });
+
+      // Mode toggling
+      $('#btn-mode-prepare').onclick = () => setWorkflowMode('prepare');
+      $('#btn-mode-build').onclick = () => setWorkflowMode('build');
+
+      // Search
+      $('#search-input').oninput = e => {
+        $('#search-clear-btn').style.display = e.target.value ? 'block' : 'none';
+        renderSidebarList();
+      };
+      $('#search-clear-btn').onclick = () => {
+        $('#search-input').value = '';
+        $('#search-clear-btn').style.display = 'none';
+        renderSidebarList();
+      };
+
+      // Compact select
+      $('#compact-block-select').onchange = e => {
+        selectedId = e.target.value;
+        render();
+      };
+
+      // Checkbox for reviewed / inserted
+      document.addEventListener('change', e => {
+        if (e.target.id === 'check-block-action') {
+          const b = project.blocks.find(x => x.id === selectedId);
+          if (!b) return;
+          rememberUndo();
+          if (workflowMode === 'prepare') {
+            b.reviewed = e.target.checked;
+          } else {
+            b.done = e.target.checked;
+          }
+          saveToStorage();
+          render();
+        }
+      });
+
+      // Navigation & Block actions
+      function stepBlock(delta) {
+        const idx = project.blocks.findIndex(b => b.id === selectedId);
+        const next = project.blocks[idx + delta];
+        if (next) {
+          selectedId = next.id;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+
+      function moveBlock(delta) {
+        const i = project.blocks.findIndex(b => b.id === selectedId);
+        const j = i + delta;
+        if (j < 0 || j >= project.blocks.length) return;
+        rememberUndo();
+        const temp = project.blocks[i];
+        project.blocks[i] = project.blocks[j];
+        project.blocks[j] = temp;
+        saveToStorage();
+        render();
+      }
+
+      function duplicateBlock() {
+        if (project.blocks.length >= 500) return showToast('Project block limit (500) reached.', true);
+        const b = project.blocks.find(x => x.id === selectedId);
+        if (!b) return;
+        rememberUndo();
+        const clone = structuredClone(b);
+        clone.id = uuid();
+        clone.title = (b.title + ' (copy)').slice(0, 150);
+        clone.done = false;
+        clone.reviewed = false;
+        const idx = project.blocks.indexOf(b);
+        project.blocks.splice(idx + 1, 0, clone);
+        selectedId = clone.id;
+        saveToStorage();
+        render();
+        showToast('Block duplicated');
+      }
+
+      function deleteBlock() {
+        const b = project.blocks.find(x => x.id === selectedId);
+        if (!b) return;
+        rememberUndo();
+        const idx = project.blocks.indexOf(b);
+        project.blocks.splice(idx, 1);
+        selectedId = project.blocks[Math.min(idx, project.blocks.length - 1)]?.id || null;
+        saveToStorage();
+        render();
+        showToast('Block deleted. Click Undo to restore.');
+      }
+
+      function addNewBlock() {
+        openEditor({
+          id: null,
+          title: 'New block',
+          type: 'Text',
+          notes: '',
+          parts: [
+            { label: 'Heading', text: '' },
+            { label: 'Body text', text: '' }
+          ]
+        });
+      }
+
+      function undoLastChange() {
+        if (!undoStack) return;
+        project = undoStack.project;
+        selectedId = undoStack.selectedId;
+        clearUndo();
+        saveToStorage();
+        render();
+        showToast('Change undone');
+      }
+
+      function downloadCurrentAsset(index) {
+        const b = project.blocks.find(x => x.id === selectedId);
+        if (!b) return;
+        const allAssets = [];
+        if (b.assetName || b.assetData) allAssets.push({ name: b.assetName || 'asset.png', data: b.assetData });
+        if (b.assets) allAssets.push(...b.assets);
+        const target = allAssets[index];
+        if (target && target.data) {
+          const a = document.createElement('a');
+          a.href = target.data;
+          const ext = target.data.match(/^data:image\/(\w+)/)?.[1] || 'png';
+          a.download = /\.(png|jpe?g|webp|gif)$/i.test(target.name) ? target.name : `asset.${ext}`;
+          a.click();
+        }
+      }
+
+      // Companion window launch
+      function launchCompanion() {
+        if (isCompanion) {
+          showToast('Already in companion view.');
+          return;
+        }
+        const w = window.open(location.pathname + '?compact=1', 'aptara-content-shelf-companion', 'width=440,height=800,resizable=yes,scrollbars=yes');
+        if (!w) {
+          showToast('Pop-up blocked. Allow pop-ups for this site to open the companion.', true);
+        } else {
+          showToast('Companion opened. Keep it beside Rise while you build.');
+        }
+      }
+
+      // Start new empty project
+      function startNewProject() {
+        if (project && project.blocks.length > 0) {
+          if (!confirm('Start an empty project? Any unsaved changes in the current project will be replaced.')) return;
+        }
+        rememberUndo();
+        project = {
+          version: 1,
+          name: 'Untitled project',
+          blocks: []
+        };
+        selectedId = null;
+        saveToStorage();
+        render();
+        showToast('New empty project created');
+      }
+
+      // Load Sample Lesson
+      function loadSampleLesson() {
+        if (project && project.blocks.length > 0 && !project.isSample) {
+          if (!confirm('Load the sample demo lesson? Export your current project first if you want to keep it.')) return;
+        }
+        rememberUndo();
+        project = createSampleProject();
+        selectedId = project.blocks[0].id;
+        saveToStorage();
+        render();
+        showToast('Sample demo lesson loaded');
+      }
+
+      // Project Rename Dialog
+      function openRenameDialog() {
+        if (!project) return;
+        $('#rename-input').value = project.name;
+        $('#rename-dialog').showModal();
+      }
+      $('#btn-cancel-rename').onclick = () => $('#rename-dialog').close();
+      $('#rename-form').onsubmit = e => {
+        e.preventDefault();
+        const name = $('#rename-input').value.trim();
+        if (!name) return;
+        rememberUndo();
+        project.name = name;
+        saveToStorage();
+        render();
+        $('#rename-dialog').close();
+        showToast('Project renamed');
+      };
+
+      // Export Handoff / Backup
+      function exportHandoff(isBackup = false) {
+        if (!project || !project.blocks.length) {
+          showToast('Cannot export an empty project. Add blocks first.', true);
+          return;
+        }
+
+        const unreviewed = project.blocks.filter(b => !b.reviewed).length;
+        if (!isBackup && workflowMode === 'prepare' && unreviewed > 0) {
+          const proceed = confirm(`${unreviewed} block(s) are not marked reviewed. Export a draft handoff anyway?`);
+          if (!proceed) return;
+        }
+
+        const cleanJson = JSON.stringify(project, null, 2);
+        const safeName = (project.name || 'Content_Shelf_Project').replace(/[^a-z0-9_-]/gi, '_');
+        const filename = `${safeName}${isBackup ? '_backup' : '_handoff'}.json`;
+
+        triggerDownload(cleanJson, filename, 'application/json');
+        showToast(isBackup ? 'Project backup downloaded' : 'Handoff exported. Send this JSON file to your Rise developer.');
+      }
+
+      // Process Handoff File (.json)
+      async function processHandoffFile(file) {
+        if (!file) return;
+        try {
+          if (file.size > 15 * 1024 * 1024) throw Error('File exceeds the 15 MB import limit.');
+          const text = await file.text();
+          const p = JSON.parse(text);
+          if (!validateProject(p)) throw Error('The chosen file is not a valid Content Shelf project.');
+
+          if (project && project.blocks.length > 0) {
+            if (!confirm('Replace current shelf with this project? Export your current shelf first to keep it.')) return;
+          }
+
+          rememberUndo();
+          project = p;
+          selectedId = p.blocks[0]?.id || null;
+          setWorkflowMode('build'); // Opening handoff automatically defaults to developer build mode!
+          saveToStorage();
+          render();
+          showToast(`Opened "${p.name}" with ${p.blocks.length} blocks.`);
+        } catch (err) {
+          showToast(err.message || 'Could not import project.', true);
+        }
+      }
+
+      $('#handoff-file-input').onchange = e => {
+        const file = e.target.files[0];
+        if (file) processHandoffFile(file);
+        e.target.value = '';
+      };
+
+      // Process Word Storyboard (.docx)
+      async function processWordFile(file) {
+        if (!file || wordLoading) return;
+        wordLoading = true;
+
+        showToast('Reading Word document… extracting blocks and media.');
+        try {
+          wordDraft = await ShelfWord.readDocx(file);
+          wordChoices = new Set(wordDraft.blocks.map((b, i) => b.populated ? i : -1).filter(i => i >= 0));
+
+          $('#check-show-unfilled').checked = false;
+          $('#word-project-name').value = wordDraft.name;
+          $('#word-import-destination').value = 'replace';
+
+          drawWordPreviewModal();
+          $('#word-preview-dialog').showModal();
+        } catch (err) {
+          showToast(err.message || 'The Word file could not be read. Your shelf was not changed.', true);
+        } finally {
+          wordLoading = false;
+        }
+      }
+
+      $('#word-file-input').onchange = e => {
+        const file = e.target.files[0];
+        if (file) processWordFile(file);
+        e.target.value = '';
+      };
+
+      // Drag and drop onto Start Screen dropzone and full window
+      let dragCounter = 0;
+      window.addEventListener('dragenter', e => {
+        e.preventDefault();
+        dragCounter++;
+        $('#global-drag-overlay')?.classList.add('active');
+      });
+      window.addEventListener('dragleave', e => {
+        e.preventDefault();
+        dragCounter--;
+        if (dragCounter <= 0) {
+          dragCounter = 0;
+          $('#global-drag-overlay')?.classList.remove('active');
+        }
+      });
+      window.addEventListener('dragover', e => {
+        e.preventDefault();
+      });
+      window.addEventListener('drop', async e => {
+        e.preventDefault();
+        dragCounter = 0;
+        $('#global-drag-overlay')?.classList.remove('active');
+        const file = e.dataTransfer?.files?.[0];
+        if (!file) return;
+
+        if (file.name.toLowerCase().endsWith('.docx')) {
+          processWordFile(file);
+        } else if (file.name.toLowerCase().endsWith('.json')) {
+          processHandoffFile(file);
+        } else {
+          showToast('Please drop a .docx Word storyboard or .json handoff file.', true);
+        }
+      });
+
+      function drawWordPreviewModal() {
+        if (!wordDraft) return;
+
+        const total = wordDraft.total;
+        const populated = total - wordDraft.empty;
+        const empty = wordDraft.empty;
+        const showUnfilled = $('#check-show-unfilled').checked;
+
+        $('#word-preview-summary').innerHTML = `
+          <b>${total} block records found:</b> ${populated} populated, ${empty} unfilled template records.<br>
+          <span style="color:var(--muted);font-size:12px;">Instructional outline rows and metadata were excluded.</span>
+        `;
+
+        const shown = wordDraft.blocks.map((b, i) => ({ b, i })).filter(({ b }) => b.populated || showUnfilled);
+
+        if (!shown.length) {
+          $('#word-records-container').innerHTML = `
+            <div style="padding:28px;text-align:center;color:var(--muted);font-size:13px;">
+              <b>All extracted records in this template are unfilled.</b><br>
+              Check "Show unfilled template records" above to select blank blocks to import.
+            </div>
+          `;
+        } else {
+          $('#word-records-container').innerHTML = shown.map(({ b, i }) => {
+            const isChecked = wordChoices.has(i);
+            const warningCount = (b.importWarnings?.length || 0) + (b.missingFields?.length || 0);
+            return `
+              <div class="preview-record-item">
+                <div class="preview-record-main">
+                  <input type="checkbox" class="preview-record-check" data-choice-index="${i}" ${isChecked ? 'checked' : ''} id="wc-${i}">
+                  <div style="flex:1;">
+                    <label for="wc-${i}" style="cursor:pointer;font-weight:700;font-size:13px;">
+                      ${esc(b.title)}
+                    </label>
+                    <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+                      ${esc(b.type)} · ${b.parts.filter(p => p.text).length} populated fields · ${b.assets.length} asset(s)
+                      ${!b.populated ? '<span class="flag-pill">Unfilled</span>' : ''}
+                      ${warningCount > 0 ? `<span class="flag-pill">${warningCount} flag(s)</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+                <div class="preview-record-details">
+                  <details>
+                    <summary>Inspect extracted content & flags</summary>
+                    <div style="margin-top:6px;line-height:1.5;">
+                      ${b.parts.map(p => `<div><b>${esc(p.label)}:</b> ${esc(p.text) || '<em>Empty</em>'}</div>`).join('')}
+                      ${b.notes ? `<div style="margin-top:4px;"><b>Setup notes:</b> ${esc(b.notes)}</div>` : ''}
+                      ${b.assets.length ? `<div style="margin-top:4px;"><b>Assets:</b> ${b.assets.map(a => esc(a.name) + (a.data ? ' (attached)' : ' (reference only)')).join(', ')}</div>` : ''}
+                      ${b.importWarnings.length ? `<ul style="margin-top:4px;color:var(--amber-ink);">${b.importWarnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
+                    </div>
+                  </details>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        updateWordSelectedCount();
+      }
+
+      function updateWordSelectedCount() {
+        const count = wordChoices.size;
+        const btn = $('#btn-apply-word-import');
+        btn.disabled = count === 0;
+        btn.textContent = `Import ${count} selected block${count === 1 ? '' : 's'}`;
+      }
+
+      $('#word-records-container').onchange = e => {
+        if (e.target.dataset.choiceIndex !== undefined) {
+          const idx = Number(e.target.dataset.choiceIndex);
+          if (e.target.checked) wordChoices.add(idx);
+          else wordChoices.delete(idx);
+          updateWordSelectedCount();
+        }
+      };
+
+      $('#check-show-unfilled').onchange = drawWordPreviewModal;
+      $('#btn-select-populated').onclick = () => {
+        wordChoices = new Set(wordDraft.blocks.map((b, i) => b.populated ? i : -1).filter(i => i >= 0));
+        drawWordPreviewModal();
+      };
+      $('#btn-select-none').onclick = () => {
+        wordChoices.clear();
+        drawWordPreviewModal();
+      };
+      $('#btn-cancel-word-preview').onclick = () => $('#word-preview-dialog').close();
+
+      $('#btn-apply-word-import').onclick = () => {
+        if (!wordDraft || !wordChoices.size) return;
+
+        const selectedBlocks = wordDraft.blocks
+          .filter((_, i) => wordChoices.has(i))
+          .map(b => {
+            const { populated, ...cleanBlock } = structuredClone(b);
+            cleanBlock.id = uuid();
+            return cleanBlock;
+          });
+
+        const isAppend = $('#word-import-destination').value === 'append';
+        const targetName = isAppend ? (project?.name || wordDraft.name) : ($('#word-project-name').value.trim() || wordDraft.name);
+
+        if (isAppend && project && project.blocks.length > 0) {
+          const existingIds = new Set(project.blocks.map(b => b.sourceId).filter(Boolean));
+          for (const b of selectedBlocks) {
+            if (b.sourceId && existingIds.has(b.sourceId)) {
+              b.importWarnings = b.importWarnings || [];
+              b.importWarnings.push(`Source ID ${b.sourceId} already exists in the shelf. Confirm additional record is intended.`);
+            }
+          }
+        }
+
+        const newBlocks = isAppend && project ? [...project.blocks, ...selectedBlocks] : selectedBlocks;
+        const candidate = {
+          version: 1,
+          name: targetName,
+          blocks: newBlocks
+        };
+
+        if (!validateProject(candidate)) {
+          showToast('Selection exceeds project limit or has invalid fields.', true);
+          return;
+        }
+
+        if (!isAppend && project && project.blocks.length > 0) {
+          if (!confirm(`Replace current shelf with ${selectedBlocks.length} imported block(s)? Export first if you need a separate copy.`)) {
+            return;
+          }
+        }
+
+        rememberUndo();
+        project = candidate;
+        selectedId = selectedBlocks[0]?.id || null;
+        setWorkflowMode('prepare'); // Importing Word sets mode to Prepare content!
+        saveToStorage();
+        render();
+        $('#word-preview-dialog').close();
+        showToast(`Imported ${selectedBlocks.length} block(s). Review flags before handoff.`);
+      };
+
+      // Block Editor Dialog
+      function openEditor(customBlock = null) {
+        const b = customBlock || project.blocks.find(x => x.id === selectedId);
+        editingBlockId = b?.id || null;
+        editingParts = structuredClone(b?.parts || [{ label: 'Heading', text: '' }, { label: 'Body text', text: '' }]);
+        editingAssets = structuredClone(b?.assets || []);
+        editingAssetData = b?.assetData || '';
+        editorExternalChange = false;
+        editorBaseline = b?.id ? JSON.stringify(project.blocks.find(x => x.id === b.id)) : JSON.stringify(project);
+
+        $('#editor-conflict-box').innerHTML = '';
+        $('#editor-dialog-title').textContent = b?.id ? 'Edit block' : 'New block';
+        $('#edit-block-title').value = b?.title || '';
+
+        // Block type
+        const typeSelect = $('#edit-block-type');
+        typeSelect.querySelectorAll('[data-custom-type]').forEach(el => el.remove());
+        if (b?.type && !Array.from(typeSelect.options).some(o => o.value === b.type)) {
+          const opt = document.createElement('option');
+          opt.value = b.type;
+          opt.textContent = b.type;
+          opt.dataset.customType = 'true';
+          typeSelect.appendChild(opt);
+        }
+        typeSelect.value = b?.type || 'Text';
+
+        $('#edit-block-notes').value = b?.notes || '';
+        $('#edit-asset-name').value = b?.assetName || '';
+        $('#edit-asset-file').value = '';
+        $('#edit-asset-status').textContent = editingAssetData ? 'Image currently attached.' : 'No image attached.';
+
+        renderEditorParts();
+        renderEditorImportedAssets();
+
+        $('#editor-dialog').showModal();
+      }
+
+      function renderEditorParts() {
+        const container = $('#editor-parts-list');
+        container.innerHTML = editingParts.map((p, i) => `
+          <div style="background:var(--surface-subtle);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px;">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+              <input type="text" class="form-control" data-part-label="${i}" value="${esc(p.label)}" placeholder="Field label (e.g. Heading)" required maxlength="150" style="flex:1;">
+              <button type="button" class="btn-sm btn-quiet btn-danger" data-remove-part="${i}" title="Remove this content piece">✕</button>
+            </div>
+            <textarea class="form-control" data-part-text="${i}" placeholder="Approved content…" maxlength="200000">${esc(p.text)}</textarea>
+          </div>
+        `).join('');
+      }
+
+      function renderEditorImportedAssets() {
+        const container = $('#editor-imported-assets-list');
+        if (!editingAssets.length) {
+          container.innerHTML = '';
+          return;
+        }
+        container.innerHTML = `
+          <label class="field-heading">Assets from Word Import</label>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">These stay attached to the block during handoff.</div>
+          ${editingAssets.map((a, i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line-subtle);font-size:12px;">
+              <div>
+                <b>${esc(a.name)}</b>
+                <span style="color:var(--muted);margin-left:6px;">(${a.data ? 'image attached' : 'filename only'})</span>
+              </div>
+              <button type="button" class="btn-sm btn-quiet btn-danger" data-remove-imported="${i}">Remove</button>
+            </div>
+          `).join('')}
+        `;
+      }
+
+      $('#btn-add-part').onclick = () => {
+        if (editingParts.length >= 100) return showToast('A block can hold at most 100 content pieces.', true);
+        editingParts.push({ label: `Content ${editingParts.length + 1}`, text: '' });
+        renderEditorParts();
+      };
+
+      $('#editor-parts-list').oninput = e => {
+        if (e.target.dataset.partLabel !== undefined) {
+          editingParts[Number(e.target.dataset.partLabel)].label = e.target.value;
+        }
+        if (e.target.dataset.partText !== undefined) {
+          editingParts[Number(e.target.dataset.partText)].text = e.target.value;
+        }
+      };
+
+      $('#editor-parts-list').onclick = e => {
+        const removeBtn = e.target.closest('[data-remove-part]');
+        if (removeBtn) {
+          editingParts.splice(Number(removeBtn.dataset.removePart), 1);
+          renderEditorParts();
+        }
+      };
+
+      $('#editor-imported-assets-list').onclick = e => {
+        const removeBtn = e.target.closest('[data-remove-imported]');
+        if (removeBtn) {
+          editingAssets.splice(Number(removeBtn.dataset.removeImported), 1);
+          renderEditorImportedAssets();
+        }
+      };
+
+      $('#btn-remove-asset').onclick = () => {
+        editingAssetData = '';
+        $('#edit-asset-file').value = '';
+        $('#edit-asset-status').textContent = 'Attached image removed.';
+      };
+
+      $('#edit-asset-file').onchange = async e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        if (f.size > 2 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(f.type)) {
+          showToast('Choose a PNG, JPEG, WebP or GIF up to 2 MB.', true);
+          e.target.value = '';
+          return;
+        }
+        assetFileLoading = true;
+        $('#edit-asset-status').textContent = 'Reading image…';
+        try {
+          editingAssetData = await new Promise((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(r.result);
+            r.onerror = reject;
+            r.readAsDataURL(f);
+          });
+          if (!$('#edit-asset-name').value) $('#edit-asset-name').value = f.name;
+          $('#edit-asset-status').textContent = `Image attached: ${f.name}`;
+        } catch {
+          showToast('Could not read image file.', true);
+        } finally {
+          assetFileLoading = false;
+        }
+      };
+
+      $('#btn-cancel-editor').onclick = () => {
+        if (confirm('Discard changes in this block editor?')) {
+          $('#editor-dialog').close();
+        }
+      };
+      $('#editor-dialog').addEventListener('cancel', e => {
+        e.preventDefault();
+        $('#btn-cancel-editor').click();
+      });
+
+      $('#editor-form').onsubmit = e => {
+        e.preventDefault();
+        if (assetFileLoading) return showToast('Please wait for the image to finish loading.', true);
+        if (editorExternalChange) return showToast('This project was updated in another window. Cancel and reopen editor before saving.', true);
+
+        const title = $('#edit-block-title').value.trim();
+        if (!title) return;
+
+        if (!editingParts.length && !$('#edit-block-notes').value.trim() && !editingAssetData && !$('#edit-asset-name').value.trim()) {
+          showToast('Add at least one content piece, note, or asset reference.', true);
+          return;
+        }
+        if (editingParts.some(p => !p.label.trim())) {
+          showToast('Every content piece must have a label.', true);
+          return;
+        }
+
+        const existing = project.blocks.find(x => x.id ===  editingBlockId);
+        const updatedBlock = {
+          ...existing,
+          id: editingBlockId || uuid(),
+          title,
+          type: $('#edit-block-type').value,
+          notes: $('#edit-block-notes').value,
+          parts: structuredClone(editingParts),
+          assetName: $('#edit-asset-name').value.trim(),
+          assetData: editingAssetData,
+          assets: structuredClone(editingAssets),
+          done: existing?.done || false,
+          reviewed: false // Edits reset reviewed state for re-verification!
+        };
+
+        const testProject = {
+          version: 1,
+          name: project.name,
+          blocks:  [updatedBlock]
+        };
+
+        if (!validateProject(testProject)) {
+          showToast('Block validation failed. Check field length and limits.', true);
+          return;
+        }
+
+        rememberUndo();
+        if (editingBlockId  && existing) {
+          const idx = project.blocks.indexOf(existing);
+          project.blocks[idx] = updatedBlock;
+        } else {
+          project.blocks.push(updatedBlock);
+        }
+
+        selectedId = updatedBlock.id;
+        saveToStorage();
+        render();
+        $('#editor-dialog').close();
+        showToast('Block saved');
+      };
+
+      // Multi-window synchronization & Stale editor conflict protection
+      window.addEventListener('storage', e => {
+        if (e.key === STORAGE_KEY && e.newValue) {
+          try {
+            const incoming = JSON.parse(e.newValue);
+            if (validateProject(incoming)) {
+              if ($('#editor-dialog').open) {
+                const targetIncoming = editingBlockId ? JSON.stringify(incoming.blocks.find(x => x.id === editingBlockId)) : JSON.stringify(incoming);
+                if (targetIncoming !== editorBaseline) {
+                  editorExternalChange = true;
+                  $('#editor-conflict-box').innerHTML = `
+                    <div style="background:var(--amber-bg);color:var(--amber-ink);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px;font-size:12px;margin-bottom:12px;">
+                      ⚠ This project was updated in another window. To avoid overwriting changes, copy your draft text and cancel to reload.
+                    </div>
+                  `;
+                }
+              }
+              project = incoming;
+              clearUndo();
+              if (!project.blocks.some(b => b.id === selectedId)) {
+                selectedId = project.blocks[0]?.id || null;
+              }
+              render();
+              showToast('Project updated from another window');
+            }
+          } catch {}
+        }
+      });
+
+      // Before unload protection
+      window.addEventListener('beforeunload', e => {
+        if (isUnsaved || $('#editor-dialog').open) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
+
+      // Initialization
+      function init() {
+        if (isCompanion) {
+          document.body.classList.add('companion-mode');
+          workflowMode = 'build'; // Companion window defaults to Rise developer build mode!
+        } else {
+          try {
+            const savedRole = localStorage.getItem(ROLE_KEY);
+            if (savedRole === 'dev') workflowMode = 'build';
+          } catch {}
+        }
+
+        // Try load existing project from localStorage
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (validateProject(parsed)) {
+              project = parsed;
+              selectedId = project.blocks[0]?.id || null;
+            }
+          }
+        } catch (err) {
+          console.error('Storage parse error:', err);
+        }
+
+        updateModeUI();
+        render();
+      }
+
+      init();
+
+    })();
+  </script>
+</body>
+
+</html>
